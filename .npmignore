@@ -1,0 +1,8 @@
+src/
+tests/
+.vscode/
+*.log
+.env
+.env.example
+nodemon.json
+tsconfig.json
