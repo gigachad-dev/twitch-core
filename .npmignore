@@ -7,3 +7,4 @@ tests/
 nodemon.json
 tsconfig.json
 LICENSE
+.eslintrc.json
