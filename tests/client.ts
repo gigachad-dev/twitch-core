@@ -1,42 +1,40 @@
 import path from 'path'
 import sqlite from 'sqlite'
-import { TwitchCommandClient, CommandSQLiteProvider, TwitchChatMessage } from '../src'
-import { Logger } from './logger'
+import { TwitchCommandClient, TwitchChatMessage } from '../src'
 
 import dotenv from 'dotenv'
 dotenv.config()
 
 const client = new TwitchCommandClient({
-    username: process.env.BOT_USERNAME,
-    oauth: process.env.OAUTH_KEY,
-    channels: [process.env.CHANNEL],
-    verboseLogging: true,
-    botOwners: ['vs_code']
+  username: process.env.BOT_USERNAME,
+  oauth: process.env.OAUTH_KEY,
+  channels: [process.env.CHANNEL],
+  verboseLogging: true,
+  botOwners: ['vs_code']
 })
-
-client.logger = Logger('main')
 
 client.on('message', (msg: TwitchChatMessage) => {
-    // if (!msg.text.startsWith(client.options.prefix)) return
+  // if (!msg.text.startsWith(client.options.prefix)) return
 })
 
+
 const ExternalConfig = {
-    Example: {
-        name: 'example',
-        group: 'system',
-        userlevel: 'everyone',
-        description: 'Пример команды',
-        examples: [
-            '!example',
-            '!example <args>'
-        ]
-    },
-    Cat: {
-        name: 'кот',
-        group: 'system',
-        userlevel: 'everyone',
-        description: 'Фото кота'
-    }
+  Example: {
+    name: 'example',
+    group: 'system',
+    userlevel: 'everyone',
+    description: 'Пример команды',
+    examples: [
+      '!example',
+      '!example <args>'
+    ]
+  },
+  Cat: {
+    name: 'кот',
+    group: 'system',
+    userlevel: 'everyone',
+    description: 'Фото кота'
+  }
 }
 
 client.registerDefaultCommands()

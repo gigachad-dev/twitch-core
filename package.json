@@ -6,7 +6,9 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "test": "nodemon"
+        "tests": "nodemon",
+        "lint": "eslint src/**/*.ts",
+        "lint:fix": "eslint src/**/*.ts --fix"
     },
     "keywords": [
         "twitch",
@@ -31,7 +33,10 @@
         "@types/node": "^15.6.1",
         "@types/node-fetch": "^2.5.10",
         "@types/tmi.js": "^1.7.1",
+        "@typescript-eslint/eslint-plugin": "^4.26.0",
+        "@typescript-eslint/parser": "^4.26.0",
         "dotenv": "^10.0.0",
+        "eslint": "^7.28.0",
         "ts-node": "^10.0.0",
         "typescript": "^4.3.2"
     },

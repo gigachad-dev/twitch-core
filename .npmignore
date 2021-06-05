@@ -6,3 +6,4 @@ tests/
 .env.example
 nodemon.json
 tsconfig.json
+LICENSE

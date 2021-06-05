@@ -5,47 +5,47 @@ const BOT_TYPE_NORMAL_MODDED = 'bot_type_normal_modded'
 const BOT_TYPE_KNOWN = 'bot_type_known'
 const BOT_TYPE_VERIFIED = 'bot_type_verified'
 const MESSAGE_LIMITS = {
-    'bot_type_normal': { messages: 20, timespan: 30 },
-    'bot_type_normal_modded': { messages: 100, timespan: 30 },
-    'bot_type_known': { messages: 50, timespan: 30 },
-    'bot_type_verified': { messages: 7500, timespan: 30 }
+  'bot_type_normal': { messages: 20, timespan: 30 },
+  'bot_type_normal_modded': { messages: 100, timespan: 30 },
+  'bot_type_known': { messages: 50, timespan: 30 },
+  'bot_type_verified': { messages: 7500, timespan: 30 }
 }
 
 const CommandConstants = Object.freeze({
-    /**
+  /**
      * Global settings key to save global bot preferences
      */
-    GLOBAL_SETTINGS_KEY,
+  GLOBAL_SETTINGS_KEY,
 
-    /**
+  /**
      * Service url for Emotes service
      */
-    GLOBAL_EMOTES_URL,
+  GLOBAL_EMOTES_URL,
 
-    /**
+  /**
      * Known bot
      */
-    BOT_TYPE_KNOWN,
+  BOT_TYPE_KNOWN,
 
-    /**
+  /**
      * Normal bot type (user, not mod)
      */
-    BOT_TYPE_NORMAL,
+  BOT_TYPE_NORMAL,
 
-    /**
+  /**
      * Verified bot
      */
-    BOT_TYPE_VERIFIED,
+  BOT_TYPE_VERIFIED,
 
-    /**
+  /**
      * Normal bot type with mod (user, channel mod)
      */
-    BOT_TYPE_NORMAL_MODDED,
+  BOT_TYPE_NORMAL_MODDED,
 
-    /**
+  /**
      * Enumeration for message limits configuration
      */
-    MESSAGE_LIMITS
+  MESSAGE_LIMITS
 })
 
 export { CommandConstants }
