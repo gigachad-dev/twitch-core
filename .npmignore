@@ -1,10 +1,10 @@
 src/
 tests/
 .vscode/
+docs/
 *.log
 .env
 .env.example
 nodemon.json
 tsconfig.json
-LICENSE
 .eslintrc.json
