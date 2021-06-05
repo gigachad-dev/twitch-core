@@ -1,10 +1,10 @@
 import path from 'path'
+import winston from 'winston'
 import EventEmitter from 'events'
 import tmi, { Client, ChatUserstate } from 'tmi.js'
 import readdir from 'recursive-readdir-sync'
-import winston, { createLogger, format, transports } from 'winston'
-const { combine, timestamp, simple, splat, colorize } = format
 
+import { ClientLogger } from './ClientLogger'
 import { EmotesManager } from '../emotes/EmotesManager'
 import { CommandConstants } from './CommandConstants'
 import { CommandSQLiteProvider } from '../settings/CommandSQLiteProvider'
@@ -117,14 +117,7 @@ class TwitchCommandClient extends EventEmitter {
     this.verboseLogging = this.options.enableVerboseLogging
     this.commands = []
     this.emotesManager = null
-    this.logger = createLogger({
-      format: combine(simple(), splat(), timestamp(), colorize()),
-      transports: [
-        new transports.Console({
-          level: this.verboseLogging ? 'debug' : 'info'
-        })
-      ]
-    })
+    this.logger = new ClientLogger().getLogger('main')
     this.channelsWithMod = []
     this.messagesCounterInterval = null
     this.messagesCount = 0
