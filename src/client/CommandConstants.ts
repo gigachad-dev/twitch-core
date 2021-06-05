@@ -13,38 +13,38 @@ const MESSAGE_LIMITS = {
 
 const CommandConstants = Object.freeze({
   /**
-     * Global settings key to save global bot preferences
-     */
+   * Global settings key to save global bot preferences
+   */
   GLOBAL_SETTINGS_KEY,
 
   /**
-     * Service url for Emotes service
-     */
+   * Service url for Emotes service
+   */
   GLOBAL_EMOTES_URL,
 
   /**
-     * Known bot
-     */
+   * Known bot
+   */
   BOT_TYPE_KNOWN,
 
   /**
-     * Normal bot type (user, not mod)
-     */
+   * Normal bot type (user, not mod)
+   */
   BOT_TYPE_NORMAL,
 
   /**
-     * Verified bot
-     */
+   * Verified bot
+   */
   BOT_TYPE_VERIFIED,
 
   /**
-     * Normal bot type with mod (user, channel mod)
-     */
+   * Normal bot type with mod (user, channel mod)
+   */
   BOT_TYPE_NORMAL_MODDED,
 
   /**
-     * Enumeration for message limits configuration
-     */
+   * Enumeration for message limits configuration
+   */
   MESSAGE_LIMITS
 })
 

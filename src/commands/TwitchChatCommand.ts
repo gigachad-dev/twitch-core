@@ -2,22 +2,87 @@ import { TwitchChatMessage } from '../messages/TwitchChatMessage'
 import { TwitchCommandClient } from '../client/TwitchCommandClient'
 
 interface CommandOptions {
+  /**
+   * Command name (default alias)
+   *
+   * @requires
+   */
   name: string
+
+  /**
+   * Command group (not used!)
+   *
+   * @requires
+   */
   group: string
+
+  /**
+   * Command description (required for output to !help <command>)
+   *
+   * @requires
+   */
   description: string
+
+  /**
+   * Userlevel access (everyone, regular, vip, subscriber, moderator, broadcaster)
+   *
+   * @requires
+   */
   userlevel: UserLevels
+
+  /**
+   * Command message text (not used!)
+   */
   message?: string
+
+  /**
+   * Command examples (requited for output to !help <command>)
+   */
   examples?: string[]
+
+  /**
+   * Command arguments
+   */
   args?: CommandArgument[]
+
+  /**
+   * More aliases
+   */
   aliases?: string[]
+
+  /**
+   * The command is available only on the bot channel
+   * Make sure the client enable `autoJoinBotChannel` parametr
+   */
   botChannelOnly?: boolean
+
+  /**
+   * Hide command help output to `!commands`
+   */
   hideFromHelp?: boolean
+
+  /**
+   * The command is available only in the private message of the bot
+   */
   privmsgOnly?: boolean
 }
 
 interface CommandArgument {
+  /**
+   * Alias name
+   *
+   * @requires
+   */
   name: string
+
+  /**
+   * Value typesafe
+   */
   type?: StringConstructor | NumberConstructor | BooleanConstructor
+
+  /**
+   * Default value
+   */
   defaultValue?: string | number | boolean
 }
 
@@ -48,8 +113,6 @@ class TwitchChatCommand {
 
   /**
    * Method called when executeCommand
-   *
-     *
    *
    * @param msg
    * @param chatter

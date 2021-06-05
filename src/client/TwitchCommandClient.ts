@@ -569,6 +569,7 @@ class TwitchCommandClient extends EventEmitter {
 
   /**
    * Unmod bot
+   *
    * @param channel
    * @param username
    */
