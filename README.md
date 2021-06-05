@@ -36,7 +36,7 @@ import { TwitchCommandClient, TwitchChatMessage } from 'twitch-core'
 const client = new TwitchCommandClient({
   username: 'VS_Code',
   oauth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  channels: ['ArchikoFF']
+  channels: ['ArchikOFF']
 })
 
 client.on('connected', () => {})
@@ -141,10 +141,10 @@ export default ExampleArgs
 
 * **name** : Название команды (стандартный алиас команды)
 * **group** : Группа команд (временно не используется!)
-* **description** : Описание команды (необходио для вывода в `!help <command>`)
+* **description** : Описание команды (используется в `!help <command>`)
 * **userlevel** : Уровень доступа (`everyone`, `regular`, `vip`, `subscriber`, `moderator`, `broadcaster`)
 * **message** ?: Сообщения команды (временно не используется!)
-* **examples** ?: Примеры пользования командой (пример выводится по команде `!help <command>`)
+* **examples** ?: Примеры пользования командой (используется в `!help <command>`)
 * **args** ?: Создание именнованых аргументов команды
 * **aliases** ?: Дополнительные алиасы команды
 * **botChannelOnly** ?: Команда доступна только на канале бота (если в клиенте включен `autoJoinBotChannel`)
@@ -153,5 +153,5 @@ export default ExampleArgs
 
 ## Стандартные команды
 
-* **!commands** : Список команд у бота
-* **!help <command>** : Подробная информация о команде
+* **!commands** : Список команд бота
+* **!help \<command\>** : Подробная информация о команде
