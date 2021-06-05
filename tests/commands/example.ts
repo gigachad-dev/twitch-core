@@ -43,4 +43,4 @@ class Example extends TwitchChatCommand {
     }
 }
 
-export default Example
+module.exports = Example

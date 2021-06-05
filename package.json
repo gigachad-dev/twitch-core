@@ -1,6 +1,6 @@
 {
     "name": "twitch-core",
-    "version": "1.0.0-rc11",
+    "version": "1.0.0-rc12",
     "description": "Twitch bot command client",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -37,7 +37,7 @@
     },
     "dependencies": {
         "node-fetch": "^2.6.1",
-        "recursive-readdir-synchronous": "0.0.4",
+        "recursive-readdir-sync": "^1.0.6",
         "sqlite": "^4.0.23",
         "tmi.js": "^1.8.3",
         "winston": "^3.3.3"

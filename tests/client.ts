@@ -1,6 +1,6 @@
 import path from 'path'
 import sqlite from 'sqlite'
-import { TwitchCommandClient, CommandSQLiteProvider, TwitchChatCommand, ChatterState, TwitchChatMessage } from '../src'
+import { TwitchCommandClient, CommandSQLiteProvider, TwitchChatMessage } from '../src'
 import { Logger } from './logger'
 
 import dotenv from 'dotenv'

@@ -1,7 +1,7 @@
 import path from 'path'
 import EventEmitter from 'events'
 import tmi, { Client, ChatUserstate } from 'tmi.js'
-import readdir from 'recursive-readdir-synchronous'
+import readdir from 'recursive-readdir-sync'
 import winston, { createLogger, format, transports } from 'winston'
 const { combine, timestamp, simple, splat, colorize } = format
 
@@ -296,13 +296,15 @@ class TwitchCommandClient extends EventEmitter {
      * @param options
      */
     registerCommandsIn(path: string, options?: ExternalCommandOptions) {
-        const files = readdir(path, ['*.d.ts'])
+        const files = readdir(path)
 
         if (options) {
             this.logger.info(`External command options: ${Object.keys(options).length}`)
         }
 
         files.forEach((file: string) => {
+            if (!file.match('.*(?<!\.d\.ts)$')) return
+
             let commandFile = require(file)
 
             if (typeof commandFile.default === 'function') {
@@ -310,7 +312,7 @@ class TwitchCommandClient extends EventEmitter {
             }
 
             if (typeof commandFile === 'function') {
-                const name: string = commandFile.name
+                const name = commandFile.name as string
 
                 if (options) {
                     if (options[name]) {
