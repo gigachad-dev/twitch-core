@@ -1,0 +1,21 @@
+{
+  "Commands": {
+    "name": "команды"
+  },
+  "Example": {
+    "name": "example",
+    "group": "system",
+    "userlevel": "everyone",
+    "description": "Пример команды",
+    "examples": [
+      "!example",
+      "!example <args>"
+    ]
+  },
+  "Cat": {
+    "name": "кот",
+    "group": "system",
+    "userlevel": "everyone",
+    "description": "Фото кота"
+  }
+}

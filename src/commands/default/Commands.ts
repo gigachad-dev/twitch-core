@@ -1,4 +1,4 @@
-import { TwitchChatCommand } from '../TwitchChatCommand'
+import { CommandOptions, TwitchChatCommand } from '../TwitchChatCommand'
 import { TwitchChatMessage } from '../../messages/TwitchChatMessage'
 import { TwitchCommandClient } from '../../client/TwitchCommandClient'
 
@@ -7,7 +7,7 @@ interface CommandArgs {
 }
 
 export default class Commands extends TwitchChatCommand {
-  constructor(client: TwitchCommandClient) {
+  constructor(client: TwitchCommandClient, options: CommandOptions) {
     super(client, {
       name: 'commands',
       group: 'system',
@@ -24,7 +24,8 @@ export default class Commands extends TwitchChatCommand {
         {
           name: 'command'
         }
-      ]
+      ],
+      ...options
     })
   }
 

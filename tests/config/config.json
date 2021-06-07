@@ -1,0 +1,24 @@
+{
+  "channels": [],
+  "bot_username": "",
+  "oauth_token": "",
+  "refresh_token": "",
+  "client_id": "",
+  "secret_token": "",
+  "twitch_scope": [
+    "chat:read",
+    "chat:edit",
+    "whispers:read",
+    "whispers:edit",
+    "channel_editor",
+    "channel:moderate"
+  ],
+  "ignore": [
+    "Moobot",
+    "Nightbot",
+    "MirRobot",
+    "Streamlabs",
+    "StreamElements"
+  ],
+  "prefix": "!"
+}

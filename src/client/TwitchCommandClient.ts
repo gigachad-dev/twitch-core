@@ -1,4 +1,5 @@
 import path from 'path'
+import lowdb from 'lowdb'
 import winston from 'winston'
 import EventEmitter from 'events'
 import tmi, { Client, ChatUserstate } from 'tmi.js'
@@ -7,12 +8,12 @@ import readdir from 'recursive-readdir-sync'
 import { ClientLogger } from './ClientLogger'
 import { EmotesManager } from '../emotes/EmotesManager'
 import { CommandConstants } from './CommandConstants'
-import { CommandSQLiteProvider } from '../settings/CommandSQLiteProvider'
+import { SettingsProvider } from '../settings/SettingsProvider'
 import { CommandParser, CommandParserResult } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { TwitchChatCommand, ExternalCommandOptions } from '../commands/TwitchChatCommand'
+import { TwitchChatCommand, ExternalCommandOptions, CommandOptions } from '../commands/TwitchChatCommand'
 
 interface ClientOptions {
   /**
@@ -84,17 +85,17 @@ interface ClientOptions {
 type ChatterState = ChatUserstate & { message: string }
 
 class TwitchCommandClient extends EventEmitter {
-  public options: ClientOptions
+  readonly logger: winston.Logger
   private tmi: Client
-  public verboseLogging: boolean
-  readonly commands: TwitchChatCommand[]
-  public emotesManager: EmotesManager
-  public logger: winston.Logger
   private channelsWithMod: string[]
-  private messagesCounterInterval: NodeJS.Timeout
-  private messagesCount: number
-  private settingsProvider: CommandSQLiteProvider
   private parser: CommandParser
+  public options: ClientOptions
+  public verboseLogging: boolean
+  public commands: TwitchChatCommand[]
+  public emotesManager: EmotesManager
+  public settingsProviders: { [key: string]: lowdb.LowdbSync<unknown> }
+  public messagesCounterInterval: NodeJS.Timeout
+  public messagesCount: number
 
   constructor(options: ClientOptions) {
     super()
@@ -112,14 +113,11 @@ class TwitchCommandClient extends EventEmitter {
       botType: CommandConstants.BOT_TYPE_NORMAL
     }
 
+    this.logger = new ClientLogger().getLogger('main')
     this.options = Object.assign(defaultOptions, options)
-    this.tmi = null
     this.verboseLogging = this.options.enableVerboseLogging
     this.commands = []
-    this.emotesManager = null
-    this.logger = new ClientLogger().getLogger('main')
     this.channelsWithMod = []
-    this.messagesCounterInterval = null
     this.messagesCount = 0
   }
 
@@ -135,7 +133,7 @@ class TwitchCommandClient extends EventEmitter {
     this.verboseLogging = true
   }
 
-  checkOptions() {
+  private checkOptions() {
     if (this.options.prefix === '/') {
       throw new Error('Invalid prefix. Cannot be /')
     }
@@ -154,25 +152,17 @@ class TwitchCommandClient extends EventEmitter {
    */
   async connect() {
     this.checkOptions()
-
     this.configureClient()
 
     this.emotesManager = new EmotesManager(this)
     await this.emotesManager.getGlobalEmotes()
 
     this.logger.info('Current default prefix is ' + this.options.prefix)
-
     this.logger.info('Connecting to Twitch Chat')
 
-    const autoJoinChannels = this.options.channels
-
-    // TODO: SettingsProvider
-    // const channelsFromSettings = await this.settingsProvider.get(CommandConstants.GLOBAL_SETTINGS_KEY, 'channels', [])
-
-    const channels = [...autoJoinChannels /*...channelsFromSettings*/]
-
+    const channels = [...this.options.channels]
     if (this.options.autoJoinBotChannel) {
-      channels.push('#' + this.options.username)
+      channels.push(this.options.username)
     }
 
     this.logger.info('Autojoining ' + channels.length + ' channels')
@@ -289,12 +279,8 @@ class TwitchCommandClient extends EventEmitter {
    * @param path
    * @param options
    */
-  registerCommandsIn(path: string, options?: ExternalCommandOptions) {
+  registerCommandsIn(path: string) {
     const files = readdir(path)
-
-    if (options) {
-      this.logger.info(`External command options: ${Object.keys(options).length}`)
-    }
 
     files.forEach((file: string) => {
       if (!file.match('.*(?<!\.d\.ts)$')) return
@@ -307,10 +293,13 @@ class TwitchCommandClient extends EventEmitter {
 
       if (typeof commandFile === 'function') {
         const name = commandFile.name as string
+        const provider = this.settingsProviders.commands
 
-        if (options) {
-          if (options[name]) {
-            this.commands.push(new commandFile(this, options[name]))
+        if (provider) {
+          const options = provider.get(name).value()
+
+          if (options) {
+            this.commands.push(new commandFile(this, options))
           } else {
             this.logger.warn(`${commandFile.name} config is not found`)
           }
@@ -404,7 +393,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param messageText
    * @param self
    */
-  async onMessage(channel: string, userstate: ChatUserstate, messageText: string, self: boolean) {
+  private async onMessage(channel: string, userstate: ChatUserstate, messageText: string, self: boolean) {
     if (self) return
 
     const chatter = { ...userstate, message: messageText } as ChatterState
@@ -422,14 +411,13 @@ class TwitchCommandClient extends EventEmitter {
     if (this.verboseLogging) this.logger.info(msg)
     this.emit('message', msg)
 
-    // TODO: SettingsProvider
     // const prefix = await this.settingsProvider.get(
-    //     message.channel.name,
-    //     'prefix', this.options.prefix
+    //   msg.channel.name,
+    //   'prefix',
+    //   this.options.prefix
     // )
 
-    const prefix = this.options.prefix
-    const parserResult = this.parser.parse(messageText, prefix)
+    const parserResult = this.parser.parse(messageText, this.options.prefix)
 
     if (parserResult) {
       if (this.verboseLogging) this.logger.info(parserResult)
@@ -489,14 +477,21 @@ class TwitchCommandClient extends EventEmitter {
 
   /**
    * Set Settings Provider class
-   * TODO: SettingsProvider
    *
-   * @param provider
+   * @param file
    */
-  // async setProvider(provider: CommandSQLiteProvider | PromiseLike<CommandSQLiteProvider>) {
-  //     this.settingsProvider = await provider
-  //     await this.settingsProvider.init(this)
-  // }
+  setProviders(...files: string[]) {
+    for (const file of files) {
+      const ext = path.extname(file)
+      const provider = new SettingsProvider(file).db
+      const name = path.basename(file, ext)
+
+      this.settingsProviders = {
+        ...this.settingsProviders,
+        [name]: provider
+      }
+    }
+  }
 
   /**
    * Request the bot to join a channel

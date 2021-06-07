@@ -1,5 +1,4 @@
 import path from 'path'
-import sqlite from 'sqlite'
 import { TwitchCommandClient, TwitchChatMessage } from '../src'
 
 import dotenv from 'dotenv'
@@ -13,37 +12,15 @@ const client = new TwitchCommandClient({
   botOwners: ['vs_code']
 })
 
-client.on('message', (msg: TwitchChatMessage) => {
-  // if (!msg.text.startsWith(client.options.prefix)) return
-})
+client.on('message', (msg: TwitchChatMessage) => { })
 
-
-const ExternalConfig = {
-  Example: {
-    name: 'example',
-    group: 'system',
-    userlevel: 'everyone',
-    description: 'Пример команды',
-    examples: [
-      '!example',
-      '!example <args>'
-    ]
-  },
-  Cat: {
-    name: 'кот',
-    group: 'system',
-    userlevel: 'everyone',
-    description: 'Фото кота'
-  }
-}
+client.setProviders(
+  path.join(__dirname, 'config/commands.json'),
+  path.join(__dirname, 'config/config.json')
+)
 
 client.registerDefaultCommands()
 
-client.registerCommandsIn(path.join(__dirname, 'commands'), ExternalConfig)
+client.registerCommandsIn(path.join(__dirname, 'commands'))
 
-// TODO: SettingsProvider
-// client.setProvider(
-//     sqlite.open(path.join(__dirname, 'database.sqlite3')).then(db => new CommandSQLiteProvider(db))
-// )
-
-client.connect().catch(console.error)
+client.connect()

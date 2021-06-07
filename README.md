@@ -2,6 +2,10 @@
 <p align="center">
   <img src="docs/images/logo.png" />
 </p>
+<p align="center">
+    It is flexible, fully object-oriented, easy to use, and makes it trivial to create your own powerful commands.
+    Based on <a href="https://github.com/tmijs/tmi.js">tmi.js</a>.
+</p>
 <br/>
 
 <p align="center">
@@ -10,14 +14,18 @@
   <img alt="Size" src="https://img.shields.io/bundlephobia/minzip/twitch-core">
 </p>
 
-## Описание
-
-Twitch Core — гибкий, полностью объектно-ориентированный, простой в использовании и упрощает создание собственных мощных команд. Кроме того, он в полной мере использует синтаксис `async / await` для получения лаконичного кода, который легко написать и легко понять. Под капотом использует [tmi.js](https://github.com/tmijs/tmi.js) для интеграции c Twitch чатом. Рекомендуется использовать с `TypeScript`.
-
 ## Установка
 
+с помощью npm
+
 ```
-$ npm install twitch-core
+npm install twitch-core
+```
+
+или yarn
+
+```
+yarn add twitch-core
 ```
 
 ## Возможности
@@ -26,6 +34,8 @@ $ npm install twitch-core
 * Автоматический парсинг аргументов команды и преобразование в именованные переменные с сохранением типов
 * Команды выполняются в асинхронном режиме
 * Настраиваемый префикс команды
+* Подгрузка файлов конфигурации
+* TypeScript definitions
 
 ## Базовая настройка клиента
 
@@ -46,6 +56,11 @@ client.on('join', channel => { })
 client.on('error', err => { })
 
 client.on('message', (msg: TwitchChatMessage) => { })
+
+client.setProviders(
+  path.join(__dirname, 'config/commands.json'),
+  path.join(__dirname, 'config/config.json')
+)
 
 client.registerDefaultCommands()
 
