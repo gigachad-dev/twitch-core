@@ -29,7 +29,7 @@ export default class Commands extends TwitchChatCommand {
     })
   }
 
-  async run(msg: TwitchChatMessage, { command }: CommandArgs) {
+  async run(msg: TwitchChatMessage, { command }: CommandArgs): Promise<void> {
     if (command?.length > 0) {
       this.commandHelp(msg, command)
     } else {
@@ -37,7 +37,7 @@ export default class Commands extends TwitchChatCommand {
     }
   }
 
-  async commandList(msg: TwitchChatMessage) {
+  async commandList(msg: TwitchChatMessage): Promise<void> {
     const commands: string[] = []
     const prefix = this.client.options.prefix
 
@@ -50,7 +50,7 @@ export default class Commands extends TwitchChatCommand {
     msg.reply(`Список команд → ${commands.join(', ')}`)
   }
 
-  commandHelp(msg: TwitchChatMessage, command: string) {
+  commandHelp(msg: TwitchChatMessage, command: string): void {
     const selectedCommand = this.client.commands.find(cmd => {
       return cmd.options.name === command && !cmd.options.hideFromHelp
     })

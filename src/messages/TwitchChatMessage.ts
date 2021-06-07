@@ -1,3 +1,4 @@
+import { ChatUserstate, CommonUserstate } from 'tmi.js'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchCommandClient, ChatterState } from '../client/TwitchCommandClient'
@@ -20,56 +21,56 @@ class TwitchChatMessage {
   /**
    * Text of the message
    */
-  get text() {
+  get text(): string {
     return this.originalMessage.message
   }
 
   /**
    * The author of the message
    */
-  get author() {
+  get author(): TwitchChatUser {
     return this._author
   }
 
   /**
    * The ID of the message
    */
-  get id() {
+  get id(): string {
     return this.originalMessage.id
   }
 
   /**
    * The channel where the message has been sent in
    */
-  get channel() {
+  get channel(): TwitchChatChannel {
     return this._channel
   }
 
   /**
    * Text color
    */
-  get color() {
+  get color(): string {
     return this.originalMessage.color
   }
 
   /**
    * Emotes contained in the message
    */
-  get emotes() {
+  get emotes(): CommonUserstate['emotes'] {
     return this.originalMessage.emotes
   }
 
   /**
    * Message sent date
    */
-  get timestamp() {
+  get timestamp(): Date {
     return this._timestamp
   }
 
   /**
    * Message type
    */
-  get messageType() {
+  get messageType(): ChatUserstate['message-type'] {
     return this.originalMessage['message-type']
   }
 
@@ -79,7 +80,7 @@ class TwitchChatMessage {
    * @param text
    * @param addRandomEmote
    */
-  async reply(text: string, addRandomEmote = false) {
+  async reply(text: string, addRandomEmote = false): Promise<[string, string] | [string]> {
     if (this.messageType === 'whisper') {
       return this.client.whisper(this.author.username, text)
     } else {
@@ -93,7 +94,7 @@ class TwitchChatMessage {
    * @param text
    * @param addRandomEmote
    */
-  async send(text: string, addRandomEmote = false) {
+  async send(text: string, addRandomEmote = false): Promise<[string]> {
     return this.client.say(this.channel.name, text, addRandomEmote)
   }
 
@@ -103,7 +104,7 @@ class TwitchChatMessage {
    * @param text
    * @param addRandomEmote
    */
-  async actionReply(text: string, addRandomEmote = false) {
+  async actionReply(text: string, addRandomEmote = false): Promise<[string]> {
     return this.client.action(this.channel.name, `@${this.author.displayName}, ${text}`, addRandomEmote)
   }
 
@@ -113,7 +114,7 @@ class TwitchChatMessage {
    * @param text
    * @param addRandomEmote
    */
-  async action(text: string, addRandomEmote = false) {
+  async action(text: string, addRandomEmote = false): Promise<[string]> {
     return this.client.action(this.channel.name, text, addRandomEmote)
   }
 }

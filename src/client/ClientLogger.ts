@@ -40,7 +40,7 @@ class ClientLogger {
     }))
   }
 
-  getLogger(moduleName?: string) {
+  getLogger(moduleName?: string): winston.Logger {
     return this.log.child({ service: moduleName })
   }
 }

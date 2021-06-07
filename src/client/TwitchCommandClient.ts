@@ -13,7 +13,7 @@ import { CommandParser, CommandParserResult } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { TwitchChatCommand, ExternalCommandOptions, CommandOptions } from '../commands/TwitchChatCommand'
+import { TwitchChatCommand, CommandOptions } from '../commands/TwitchChatCommand'
 
 interface ClientOptions {
   /**
@@ -124,12 +124,12 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * ???
    */
-  configureClient() { }
+  configureClient(): void { }
 
   /**
    * Enable verbose logging
    */
-  enableVerboseLogging() {
+  enableVerboseLogging(): void {
     this.verboseLogging = true
   }
 
@@ -150,7 +150,7 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Connect the bot to Twitch Chat
    */
-  async connect() {
+  async connect(): Promise<void> {
     this.checkOptions()
     this.configureClient()
 
@@ -215,7 +215,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param message
    * @param addRandomEmote
    */
-  async say(channel: string, message: string, addRandomEmote = false) {
+  async say(channel: string, message: string, addRandomEmote = false): Promise<[string]> {
     if (this.checkRateLimit()) {
       if (addRandomEmote) {
         message += ' ' + this.emotesManager.getRandomEmote().code
@@ -242,7 +242,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param message
    * @param addRandomEmote
    */
-  async action(channel: string, message: string, addRandomEmote = false) {
+  async action(channel: string, message: string, addRandomEmote = false): Promise<[string]> {
     if (this.checkRateLimit()) {
       if (addRandomEmote) {
         message += ' ' + this.emotesManager.getRandomEmote().code
@@ -268,7 +268,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param username
    * @param message
    */
-  async whisper(username: string, message: string) {
+  async whisper(username: string, message: string): Promise<[string, string]> {
     const serverResponse = await this.tmi.whisper(username, message)
     return serverResponse
   }
@@ -279,7 +279,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param path
    * @param options
    */
-  registerCommandsIn(path: string) {
+  registerCommandsIn(path: string): void {
     const files = readdir(path)
 
     files.forEach((file: string) => {
@@ -319,11 +319,11 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Register default commands
    */
-  registerDefaultCommands() {
+  registerDefaultCommands(): void {
     this.registerCommandsIn(path.join(__dirname, '../commands/default'))
   }
 
-  findCommand(parserResult: CommandParserResult) {
+  findCommand(parserResult: CommandParserResult): TwitchChatCommand {
     let command: TwitchChatCommand
 
     this.commands.forEach(v => {
@@ -347,14 +347,14 @@ class TwitchCommandClient extends EventEmitter {
    * @param command
    * @param msg
    */
-  executeCommandMethod(command: string, msg: TwitchChatMessage) {
+  executeCommandMethod(command: string, msg: TwitchChatMessage): void {
     this.findCommand({ command })?.execute(msg)
   }
 
   /**
    * Bot connected
    */
-  onConnect() {
+  onConnect(): void {
     this.emit('connected')
   }
 
@@ -364,7 +364,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param channel
    * @param username
    */
-  onJoin(channel: string, username: string) {
+  onJoin(channel: string, username: string): void {
     const channelObject = new TwitchChatChannel({ channel }, this)
 
     if (
@@ -381,7 +381,7 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Bot disconnects
    */
-  onDisconnect() {
+  onDisconnect(): void {
     this.emit('disconnected')
   }
 
@@ -393,7 +393,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param messageText
    * @param self
    */
-  private async onMessage(channel: string, userstate: ChatUserstate, messageText: string, self: boolean) {
+  private async onMessage(channel: string, userstate: ChatUserstate, messageText: string, self: boolean): Promise<void> {
     if (self) return
 
     const chatter = { ...userstate, message: messageText } as ChatterState
@@ -464,14 +464,14 @@ class TwitchCommandClient extends EventEmitter {
    * @param reason
    * @param duration
    */
-  onTimeout(channel: string, username: string, reason: string, duration: string) {
+  onTimeout(channel: string, username: string, reason: string, duration: string): void {
     this.emit('timeout', channel, username, reason, duration)
   }
 
   /**
    * Reconnection
    */
-  onReconnect() {
+  onReconnect(): void {
     this.emit('reconnect')
   }
 
@@ -480,7 +480,7 @@ class TwitchCommandClient extends EventEmitter {
    *
    * @param file
    */
-  setProviders(...files: string[]) {
+  setProviders(...files: string[]): void {
     for (const file of files) {
       const ext = path.extname(file)
       const provider = new SettingsProvider(file).db
@@ -498,7 +498,7 @@ class TwitchCommandClient extends EventEmitter {
    *
    * @param channel
    */
-  async join(channel: string) {
+  async join(channel: string): Promise<[string]> {
     return this.tmi.join(channel)
   }
 
@@ -507,21 +507,21 @@ class TwitchCommandClient extends EventEmitter {
    *
    * @param channel
    */
-  async part(channel: string) {
+  async part(channel: string): Promise<[string]> {
     return this.tmi.part(channel)
   }
 
   /**
    * Gets the bot username
    */
-  getUsername() {
+  getUsername(): string {
     return this.tmi.getUsername()
   }
 
   /**
    * Gets the bot channels
    */
-  getChannels() {
+  getChannels(): string[] {
     return this.tmi.getChannels()
   }
 
@@ -530,7 +530,7 @@ class TwitchCommandClient extends EventEmitter {
    *
    * @param author
    */
-  isOwner(author: TwitchChatUser) {
+  isOwner(author: TwitchChatUser): boolean {
     return this.options.botOwners.includes(author.username)
   }
 
@@ -540,7 +540,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param channel
    * @param username
    */
-  onMod(channel: string, username: string) {
+  onMod(channel: string, username: string): void {
     if (
       username === this.getUsername() &&
       !this.channelsWithMod.includes(channel)
@@ -557,7 +557,7 @@ class TwitchCommandClient extends EventEmitter {
    *
    * @param error
    */
-  onError(error: unknown) {
+  onError(error: unknown): void {
     this.logger.error(error)
     this.emit('error', error)
   }
@@ -568,7 +568,7 @@ class TwitchCommandClient extends EventEmitter {
    * @param channel
    * @param username
    */
-  onUnmod(channel: string, username: string) {
+  onUnmod(channel: string, username: string): void {
     if (username === this.getUsername()) {
       this.logger.debug('Bot has received unmod')
       this.channelsWithMod = this.channelsWithMod.filter(v => {
@@ -582,7 +582,7 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Start messages counting
    */
-  private startMessagesCounterInterval() {
+  private startMessagesCounterInterval(): void {
     if (this.options.enableRateLimitingControl) {
       if (this.verboseLogging) {
         this.logger.debug('Starting messages counter interval')
@@ -600,7 +600,7 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Reset message counter
    */
-  private resetMessageCounter() {
+  private resetMessageCounter(): void {
     if (this.verboseLogging) this.logger.debug('Resetting messages count')
 
     this.messagesCount = 0
@@ -609,7 +609,7 @@ class TwitchCommandClient extends EventEmitter {
   /**
    * Check if the bot sent too many messages in timespan limit
    */
-  private checkRateLimit() {
+  private checkRateLimit(): boolean {
     if (this.options.enableRateLimitingControl) {
       const messageLimits = CommandConstants.MESSAGE_LIMITS[this.options.botType]
 

@@ -19,7 +19,7 @@ class EmotesManager {
     this.emotes = []
   }
 
-  async getGlobalEmotes() {
+  async getGlobalEmotes(): Promise<void> {
     this.client.logger.info('Loading global emotes...')
 
     const response = await fetch(CommandConstants.GLOBAL_EMOTES_URL)
@@ -28,7 +28,7 @@ class EmotesManager {
     this.emotes = json
   }
 
-  getRandomEmote() {
+  getRandomEmote(): Emotes {
     return this.emotes[Math.floor(Math.random() * this.emotes.length)]
   }
 }

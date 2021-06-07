@@ -17,14 +17,14 @@ class TwitchChatChannel {
   /**
    * Get channel name
    */
-  get name() {
+  get name(): string {
     return this.originalMessage.channel
   }
 
   /**
    * Get room_id
    */
-  get id() {
+  get id(): string {
     return this.originalMessage.room_id
   }
 }

@@ -98,10 +98,6 @@ type NamedParameters = {
   [key: string]: string | number | boolean
 }
 
-type ExternalCommandOptions = {
-  [key in symbol]: CommandOptions
-}
-
 class TwitchChatCommand {
   readonly options: CommandOptions
   readonly client: TwitchCommandClient
@@ -117,7 +113,7 @@ class TwitchChatCommand {
    * @param msg
    * @param chatter
    */
-  async execute(msg: TwitchChatMessage) { }
+  async execute(msg: TwitchChatMessage): Promise<void> { }
 
   /**
    * Method called when command is executed
@@ -125,7 +121,7 @@ class TwitchChatCommand {
    * @param msg
    * @param parameters
    */
-  async run(msg: TwitchChatMessage, parameters: unknown) { }
+  async run(msg: TwitchChatMessage, parameters: unknown): Promise<void> { }
 
   /**
    * Prepare the command to be executed
@@ -133,7 +129,7 @@ class TwitchChatCommand {
    * @param msg
    * @param parameters
    */
-  async prepareRun(msg: TwitchChatMessage, parameters: string[]) {
+  async prepareRun(msg: TwitchChatMessage, parameters: string[]): Promise<void> {
     const namedParameters: NamedParameters = {}
 
     if (this.options.args && this.options.args.length > 0) {
@@ -162,7 +158,7 @@ class TwitchChatCommand {
    *
    * @param msg
    */
-  preValidate(msg: TwitchChatMessage) {
+  preValidate(msg: TwitchChatMessage): string | boolean {
     if (msg.messageType !== 'whisper' && this.options.privmsgOnly) {
       return 'Эта команда доступна только через личное сообщение бота'
     }
@@ -224,4 +220,4 @@ class TwitchChatCommand {
   }
 }
 
-export { TwitchChatCommand, CommandOptions, CommandArgument, ExternalCommandOptions }
+export { TwitchChatCommand, CommandOptions, CommandArgument }
