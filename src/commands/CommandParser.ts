@@ -1,5 +1,4 @@
 import { TwitchChatCommand } from './TwitchChatCommand'
-import { TwitchCommandClient } from '../client/TwitchCommandClient'
 
 interface CommandParserResult {
   command: string
@@ -9,11 +8,9 @@ interface CommandParserResult {
 
 class CommandParser {
   protected commands: TwitchChatCommand[]
-  private client: TwitchCommandClient
 
-  constructor(commands: TwitchChatCommand[], client: TwitchCommandClient) {
+  constructor(commands: TwitchChatCommand[]) {
     this.commands = commands
-    this.client = client
   }
 
   parse(message: string, prefix: string): CommandParserResult | null {
@@ -31,18 +28,9 @@ class CommandParser {
     }
 
     const regex = new RegExp('^(' + prefix + ')([^\\s]+) ?(.*)', 'gims')
-
-    if (this.client.verboseLogging) {
-      this.client.logger.debug('%o', regex)
-    }
-
     const matches = regex.exec(message)
 
-    if (this.client.verboseLogging && matches !== null) {
-      this.client.logger.debug('%o', matches)
-    }
-
-    if (matches !== null) {
+    if (matches) {
       const prefix = matches[1]
       const command = matches[2]
       let args: string[] = []

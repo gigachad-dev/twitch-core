@@ -62,11 +62,6 @@ interface ClientOptions {
   autoJoinBotChannel?: boolean
 
   /**
-   * Denotes if enable the !join and !part command in bot channel (default: true)
-   */
-  enableJoinCommand?: boolean
-
-  /**
    * Define the bot type, will be used for message limits control. See CommandConstants for available bot type values (default: BOT_TYPE_NORMAL)
    */
   botType?: keyof typeof CommandConstants.MESSAGE_LIMITS
@@ -75,11 +70,6 @@ interface ClientOptions {
    * Enable Rate Limiting control (default: true)
    */
   enableRateLimitingControl?: boolean
-
-  /**
-   * Enable verbose logging
-   */
-  enableVerboseLogging?: boolean
 }
 
 type ChatterState = ChatUserstate & { message: string }
@@ -90,7 +80,6 @@ class TwitchCommandClient extends EventEmitter {
   private channelsWithMod: string[]
   private parser: CommandParser
   public options: ClientOptions
-  public verboseLogging: boolean
   public commands: TwitchChatCommand[]
   public emotesManager: EmotesManager
   public settingsProviders: { [key: string]: lowdb.LowdbSync<unknown> }
@@ -106,31 +95,17 @@ class TwitchCommandClient extends EventEmitter {
       botOwners: [],
       onJoinMessage: '',
       greetOnJoin: false,
+      verboseLogging: false,
       autoJoinBotChannel: false,
-      enableJoinCommand: true,
-      enableVerboseLogging: false,
       enableRateLimitingControl: true,
       botType: CommandConstants.BOT_TYPE_NORMAL
     }
 
     this.logger = new ClientLogger().getLogger('main')
     this.options = Object.assign(defaultOptions, options)
-    this.verboseLogging = this.options.enableVerboseLogging
     this.commands = []
     this.channelsWithMod = []
     this.messagesCount = 0
-  }
-
-  /**
-   * ???
-   */
-  configureClient(): void { }
-
-  /**
-   * Enable verbose logging
-   */
-  enableVerboseLogging(): void {
-    this.verboseLogging = true
   }
 
   private checkOptions() {
@@ -152,7 +127,6 @@ class TwitchCommandClient extends EventEmitter {
    */
   async connect(): Promise<void> {
     this.checkOptions()
-    this.configureClient()
 
     this.emotesManager = new EmotesManager(this)
     await this.emotesManager.getGlobalEmotes()
@@ -169,7 +143,7 @@ class TwitchCommandClient extends EventEmitter {
 
     this.tmi = new tmi.client({
       options: {
-        debug: this.verboseLogging
+        debug: this.options.verboseLogging
       },
       connection: {
         secure: true,
@@ -197,13 +171,7 @@ class TwitchCommandClient extends EventEmitter {
 
     this.tmi.on('unmod', this.onUnmod.bind(this))
 
-    // ???
-    // this.tmi.on('error', this.onError.bind(this))
-
     this.tmi.on('message', this.onMessage.bind(this))
-
-    // ???
-    // this.tmi.on('raided', this.onRaided.bind(this))
 
     await this.tmi.connect()
   }
@@ -313,7 +281,7 @@ class TwitchCommandClient extends EventEmitter {
       }
     }, this)
 
-    this.parser = new CommandParser(this.commands, this)
+    this.parser = new CommandParser(this.commands)
   }
 
   /**
@@ -408,20 +376,11 @@ class TwitchCommandClient extends EventEmitter {
       }
     }
 
-    if (this.verboseLogging) this.logger.info(msg)
     this.emit('message', msg)
-
-    // const prefix = await this.settingsProvider.get(
-    //   msg.channel.name,
-    //   'prefix',
-    //   this.options.prefix
-    // )
 
     const parserResult = this.parser.parse(messageText, this.options.prefix)
 
     if (parserResult) {
-      if (this.verboseLogging) this.logger.info(parserResult)
-
       const command = this.findCommand(parserResult)
 
       if (command) {
@@ -443,18 +402,6 @@ class TwitchCommandClient extends EventEmitter {
       }
     }
   }
-
-  // TODO: ??
-  // onRaided(action) {}
-
-  // TODO: ???
-  // onAction(action) { }
-
-  // TODO: ???
-  // onBan(user, reason) { }
-
-  // TODO: ???
-  // onUnban(user) { }
 
   /**
    * Connection timeout
@@ -584,7 +531,7 @@ class TwitchCommandClient extends EventEmitter {
    */
   private startMessagesCounterInterval(): void {
     if (this.options.enableRateLimitingControl) {
-      if (this.verboseLogging) {
+      if (this.options.verboseLogging) {
         this.logger.debug('Starting messages counter interval')
       }
 
@@ -601,7 +548,9 @@ class TwitchCommandClient extends EventEmitter {
    * Reset message counter
    */
   private resetMessageCounter(): void {
-    if (this.verboseLogging) this.logger.debug('Resetting messages count')
+    if (this.options.verboseLogging) {
+      this.logger.debug('Resetting messages count')
+    }
 
     this.messagesCount = 0
   }
@@ -613,7 +562,7 @@ class TwitchCommandClient extends EventEmitter {
     if (this.options.enableRateLimitingControl) {
       const messageLimits = CommandConstants.MESSAGE_LIMITS[this.options.botType]
 
-      if (this.verboseLogging) {
+      if (this.options.verboseLogging) {
         this.logger.warn('Messages count: ' + this.messagesCount)
       }
 
