@@ -31,7 +31,7 @@
     "homepage": "https://github.com/crashmax-dev/twitch-core",
     "devDependencies": {
         "@types/lowdb": "^1.0.10",
-        "@types/node": "^15.6.1",
+        "@types/node": "^15.12.4",
         "@types/node-fetch": "^2.5.10",
         "@types/tmi.js": "^1.7.1",
         "@typescript-eslint/eslint-plugin": "^4.26.0",
