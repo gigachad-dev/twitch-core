@@ -1,6 +1,6 @@
 export { ClientLogger } from './client/ClientLogger'
 export { CommandConstants } from './client/CommandConstants'
-export { TwitchCommandClient, ClientOptions, ChatterState } from './client/TwitchCommandClient'
+export { TwitchCommandClient, ClientOptions, TwitchOptions, ChatterState } from './client/TwitchCommandClient'
 export { TwitchChatUser } from './users/TwitchChatUser'
 export { TwitchChatMessage } from './messages/TwitchChatMessage'
 export { TwitchChatChannel } from './channels/TwitchChatChannel'

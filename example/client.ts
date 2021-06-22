@@ -14,7 +14,7 @@ const client = new TwitchCommandClient({
 
 client.on('message', (msg: TwitchChatMessage) => { })
 
-client.setProviders(
+client.provider.set(
   path.join(__dirname, 'config/commands.json'),
   path.join(__dirname, 'config/config.json')
 )

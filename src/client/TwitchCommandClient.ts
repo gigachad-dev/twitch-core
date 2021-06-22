@@ -1,5 +1,4 @@
 import path from 'path'
-import lowdb from 'lowdb'
 import winston from 'winston'
 import EventEmitter from 'events'
 import tmi, { Client, ChatUserstate } from 'tmi.js'
@@ -8,19 +7,39 @@ import readdir from 'recursive-readdir-sync'
 import { ClientLogger } from './ClientLogger'
 import { EmotesManager } from '../emotes/EmotesManager'
 import { CommandConstants } from './CommandConstants'
-import { SettingsProvider } from '../settings/SettingsProvider'
 import { CommandParser, CommandParserResult } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { TwitchChatCommand, CommandOptions } from '../commands/TwitchChatCommand'
+import { TwitchChatCommand } from '../commands/TwitchChatCommand'
+import { SettingsProvider } from '../settings/SettingsProvider'
+
+type MessageLimits = keyof typeof CommandConstants.MESSAGE_LIMITS
+
+interface TwitchOptions {
+  /**
+   * Twitch OAuth token
+   */
+  oauthToken: string
+
+  /**
+   * https://dev.twitch.tv/docs/authentication#refreshing-access-tokens
+   */
+  refreshToken: string
+
+  /**
+   * https://dev.twitch.tv/console/apps
+   */
+  clientId: string
+  secretToken: string
+
+  /**
+   * https://dev.twitch.tv/docs/authentication#scopes
+   */
+  scopes: string[]
+}
 
 interface ClientOptions {
-  /**
-   * Enable verbose logging (default: false)
-   */
-  verboseLogging?: boolean
-
   /**
    * Bot username
    */
@@ -30,6 +49,11 @@ interface ClientOptions {
    * Bot oauth password (without oauth:)
    */
   oauth: string
+
+  /**
+   * Initials channels to join (default: empty array)
+   */
+  channels: string[]
 
   /**
    * List of bot owners username (default: empty array)
@@ -47,11 +71,6 @@ interface ClientOptions {
   greetOnJoin?: boolean
 
   /**
-   * Initials channels to join (default: empty array)
-   */
-  channels: string[]
-
-  /**
    * On Join message (sent if greetOnJoin = true)
    */
   onJoinMessage?: string
@@ -62,9 +81,15 @@ interface ClientOptions {
   autoJoinBotChannel?: boolean
 
   /**
-   * Define the bot type, will be used for message limits control. See CommandConstants for available bot type values (default: BOT_TYPE_NORMAL)
+   * Enable verbose logging (default: false)
    */
-  botType?: keyof typeof CommandConstants.MESSAGE_LIMITS
+  verboseLogging?: boolean
+
+  /**
+   * Define the bot type, will be used for message limits control.
+   * See CommandConstants for available bot type values (default: 'BOT_TYPE_NORMAL')
+   */
+  botType?: MessageLimits
 
   /**
    * Enable Rate Limiting control (default: true)
@@ -82,7 +107,7 @@ class TwitchCommandClient extends EventEmitter {
   public options: ClientOptions
   public commands: TwitchChatCommand[]
   public emotesManager: EmotesManager
-  public settingsProviders: { [key: string]: lowdb.LowdbSync<unknown> }
+  public provider: SettingsProvider
   public messagesCounterInterval: NodeJS.Timeout
   public messagesCount: number
 
@@ -101,6 +126,7 @@ class TwitchCommandClient extends EventEmitter {
       botType: CommandConstants.BOT_TYPE_NORMAL
     }
 
+    this.provider = new SettingsProvider(this)
     this.logger = new ClientLogger().getLogger('main')
     this.options = Object.assign(defaultOptions, options)
     this.commands = []
@@ -260,22 +286,22 @@ class TwitchCommandClient extends EventEmitter {
       }
 
       if (typeof commandFile === 'function') {
-        const name = commandFile.name as string
-        const provider = this.settingsProviders.commands
+        const commandName = commandFile.name as string
+        const provider = this.provider.get('commands')
 
         if (provider) {
-          const options = provider.get(name).value()
+          const options = provider.get(commandName).value()
 
           if (options) {
             this.commands.push(new commandFile(this, options))
           } else {
-            this.logger.warn(`${commandFile.name} config is not found`)
+            this.logger.warn(`${commandName} config is not found`)
           }
         } else {
           this.commands.push(new commandFile(this))
         }
 
-        this.logger.info(`Register command ${name}`)
+        this.logger.info(`Register command ${commandName}`)
       } else {
         this.logger.warn('You are not export default class correctly!')
       }
@@ -423,24 +449,6 @@ class TwitchCommandClient extends EventEmitter {
   }
 
   /**
-   * Set Settings Provider class
-   *
-   * @param file
-   */
-  setProviders(...files: string[]): void {
-    for (const file of files) {
-      const ext = path.extname(file)
-      const provider = new SettingsProvider(file).db
-      const name = path.basename(file, ext)
-
-      this.settingsProviders = {
-        ...this.settingsProviders,
-        [name]: provider
-      }
-    }
-  }
-
-  /**
    * Request the bot to join a channel
    *
    * @param channel
@@ -577,4 +585,4 @@ class TwitchCommandClient extends EventEmitter {
   }
 }
 
-export { TwitchCommandClient, ClientOptions, ChatterState }
+export { TwitchCommandClient, ClientOptions, TwitchOptions, ChatterState }

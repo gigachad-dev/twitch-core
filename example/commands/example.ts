@@ -31,7 +31,7 @@ export default class Example extends TwitchChatCommand {
     })
   }
 
-  async run(msg: TwitchChatMessage, { name, age, bool }: CommandArgs) {
+  async run(msg: TwitchChatMessage, { name, age, bool }: CommandArgs): Promise<void> {
     msg.reply(`${name} ${age} ${bool}`)
   }
 

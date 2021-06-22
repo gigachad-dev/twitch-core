@@ -21,19 +21,19 @@ export default class Cat extends TwitchChatCommand {
     this.cat_api = 'http://aws.random.cat/meow'
   }
 
-  async run(msg: TwitchChatMessage) {
+  async run(msg: TwitchChatMessage): Promise<void> {
     try {
       const response = await fetch(this.cat_api)
       const json: CatResponse = await response.json()
       const emote = this.cat_emotes[this.rand(0, this.cat_emotes.length - 1)]
 
-      msg.reply(`${emote} ${json.file}`)
+      msg.reply(`${emote} ${json.file.replace(/ /g, '%20')}`)
     } catch (err) {
       console.log(err)
     }
   }
 
-  rand(min: number, max: number) {
+  rand(min: number, max: number): number {
     return Math.floor(min + Math.random() * (max + 1 - min))
   }
 }

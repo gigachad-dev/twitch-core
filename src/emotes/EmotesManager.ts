@@ -10,7 +10,7 @@ interface Emotes {
   channel_name: string | null
 }
 
-class EmotesManager {
+export class EmotesManager {
   private client: TwitchCommandClient
   private emotes: Emotes[]
 
@@ -32,5 +32,3 @@ class EmotesManager {
     return this.emotes[Math.floor(Math.random() * this.emotes.length)]
   }
 }
-
-export { EmotesManager }

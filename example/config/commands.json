@@ -1,6 +1,9 @@
 {
   "Commands": {
-    "name": "команды"
+    "aliases": [
+      "help",
+      "команды"
+    ]
   },
   "Example": {
     "name": "example",
@@ -13,7 +16,10 @@
     ]
   },
   "Cat": {
-    "name": "кот",
+    "name": "cat",
+    "aliases": [
+      "кот"
+    ],
     "group": "system",
     "userlevel": "everyone",
     "description": "Фото кота"

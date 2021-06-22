@@ -1,58 +1,43 @@
-import lowdb from 'lowdb'
+import path from 'path'
+import Lowdb from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
+import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
 
-interface Settings {
-  /**
-   * Client channels
-   */
-  channels: string[]
+export class SettingsProvider {
+  private client: TwitchCommandClient
+  private providers: Record<string, Lowdb.LowdbSync<any>>
 
-  /**
-   * Bot username
-   */
-  bot_username: string
+  constructor(client: TwitchCommandClient) {
+    this.client = client
+  }
 
   /**
-   * Twitch OAuth token
+   * Set Settings Provider
+   *
+   * @param files
    */
-  oauth_token: string
+  set(...files: string[]): void {
+    for (const file of files) {
+      const ext = path.extname(file)
+      const name = path.basename(file, ext)
+      const provider = Lowdb(
+        new FileSync(file)
+      )
+
+      this.providers = {
+        ...this.providers,
+        [name]: provider
+      }
+    }
+  }
 
   /**
-   * https://dev.twitch.tv/docs/authentication#refreshing-access-tokens
+   * Get Settings Provider
+   *
+   * @param name
+   * @returns
    */
-  refresh_token: string
-
-  /**
-   * https://dev.twitch.tv/console/apps
-   */
-  client_id: string
-  secret_token: string
-
-  /**
-   * https://dev.twitch.tv/docs/authentication#scopes
-   */
-  twitch_scope: string[]
-
-  /**
-   * Ignored users
-   */
-  ignore: string[]
-
-  /**
-   * Command prefix
-   */
-  prefix: symbol
-}
-
-class SettingsProvider {
-  public db: lowdb.LowdbSync<unknown>
-
-  constructor(path: string, values?: unknown) {
-    const adapter = new FileSync(path)
-
-    this.db = lowdb(adapter)
-    this.db.defaults({ values }).write()
+  get<T>(name: string): Lowdb.LowdbSync<T> {
+    return this.providers[name] as Lowdb.LowdbSync<T>
   }
 }
-
-export { SettingsProvider }

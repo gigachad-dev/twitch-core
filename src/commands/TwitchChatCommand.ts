@@ -4,29 +4,21 @@ import { TwitchCommandClient } from '../client/TwitchCommandClient'
 interface CommandOptions {
   /**
    * Command name (default alias)
-   *
-   * @requires
    */
   name: string
 
   /**
    * Command group (not used!)
-   *
-   * @requires
    */
   group: string
 
   /**
    * Command description (required for output to !help <command>)
-   *
-   * @requires
    */
   description: string
 
   /**
    * Userlevel access (everyone, regular, vip, subscriber, moderator, broadcaster)
-   *
-   * @requires
    */
   userlevel: UserLevels
 
@@ -70,8 +62,6 @@ interface CommandOptions {
 interface CommandArgument {
   /**
    * Alias name
-   *
-   * @requires
    */
   name: string
 
