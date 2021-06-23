@@ -88,6 +88,8 @@ type NamedParameters = {
   [key: string]: string | number | boolean
 }
 
+type CommandProvider = Record<string, CommandOptions>
+
 class TwitchChatCommand {
   readonly options: CommandOptions
   readonly client: TwitchCommandClient
@@ -210,4 +212,4 @@ class TwitchChatCommand {
   }
 }
 
-export { TwitchChatCommand, CommandOptions, CommandArgument }
+export { TwitchChatCommand, CommandOptions, CommandArgument, CommandProvider }

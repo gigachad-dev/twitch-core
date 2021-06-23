@@ -9,7 +9,8 @@ const client = new TwitchCommandClient({
   oauth: process.env.OAUTH_KEY,
   channels: [process.env.CHANNEL],
   verboseLogging: false,
-  botOwners: ['vs_code']
+  botOwners: ['vs_code'],
+  serverPort: 9999
 })
 
 client.on('message', (msg: TwitchChatMessage) => { })

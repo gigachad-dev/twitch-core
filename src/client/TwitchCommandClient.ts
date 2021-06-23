@@ -4,6 +4,7 @@ import EventEmitter from 'events'
 import tmi, { Client, ChatUserstate } from 'tmi.js'
 import readdir from 'recursive-readdir-sync'
 
+import { Server } from '../server/Server'
 import { ClientLogger } from './ClientLogger'
 import { EmotesManager } from '../emotes/EmotesManager'
 import { CommandConstants } from './CommandConstants'
@@ -11,7 +12,7 @@ import { CommandParser, CommandArguments } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { CommandOptions, TwitchChatCommand } from '../commands/TwitchChatCommand'
+import { TwitchChatCommand, CommandProvider } from '../commands/TwitchChatCommand'
 import { SettingsProvider } from '../settings/SettingsProvider'
 
 type MessageLimits = keyof typeof CommandConstants.MESSAGE_LIMITS
@@ -61,6 +62,11 @@ interface ClientOptions {
   botOwners?: string[]
 
   /**
+   * Express server port (default: 8080)
+   */
+  serverPort?: number
+
+  /**
    * Default command prefix (default: !)
    */
   prefix?: string
@@ -101,9 +107,12 @@ type ChatterState = ChatUserstate & { message: string }
 
 class TwitchCommandClient extends EventEmitter {
   readonly logger: winston.Logger
+
   private tmi: Client
   private channelsWithMod: string[]
   private parser: CommandParser
+  private server: Server
+
   public options: ClientOptions
   public commands: TwitchChatCommand[]
   public emotesManager: EmotesManager
@@ -118,6 +127,7 @@ class TwitchCommandClient extends EventEmitter {
       prefix: '!',
       channels: [],
       botOwners: [],
+      serverPort: 8080,
       onJoinMessage: '',
       greetOnJoin: false,
       verboseLogging: false,
@@ -126,9 +136,10 @@ class TwitchCommandClient extends EventEmitter {
       botType: CommandConstants.BOT_TYPE_NORMAL
     }
 
+    this.options = Object.assign(defaultOptions, options)
+    this.server = new Server(this, this.options.serverPort)
     this.provider = new SettingsProvider(this)
     this.logger = new ClientLogger().getLogger('main')
-    this.options = Object.assign(defaultOptions, options)
     this.commands = []
     this.channelsWithMod = []
     this.messagesCount = 0
@@ -152,6 +163,7 @@ class TwitchCommandClient extends EventEmitter {
    * Connect the bot to Twitch Chat
    */
   async connect(): Promise<void> {
+    this.server.start()
     this.checkOptions()
 
     this.emotesManager = new EmotesManager(this)
@@ -287,7 +299,7 @@ class TwitchCommandClient extends EventEmitter {
 
       if (typeof commandFile === 'function') {
         const commandName = commandFile.name as string
-        const provider = this.provider.get<Record<string, CommandOptions>>('commands')
+        const provider = this.provider.get<CommandProvider>('commands')
 
         if (provider) {
           const options = provider.get(commandName).value()
