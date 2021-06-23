@@ -7,11 +7,11 @@ import readdir from 'recursive-readdir-sync'
 import { ClientLogger } from './ClientLogger'
 import { EmotesManager } from '../emotes/EmotesManager'
 import { CommandConstants } from './CommandConstants'
-import { CommandParser, CommandParserResult } from '../commands/CommandParser'
+import { CommandParser, CommandArguments } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { TwitchChatCommand } from '../commands/TwitchChatCommand'
+import { CommandOptions, TwitchChatCommand } from '../commands/TwitchChatCommand'
 import { SettingsProvider } from '../settings/SettingsProvider'
 
 type MessageLimits = keyof typeof CommandConstants.MESSAGE_LIMITS
@@ -287,7 +287,7 @@ class TwitchCommandClient extends EventEmitter {
 
       if (typeof commandFile === 'function') {
         const commandName = commandFile.name as string
-        const provider = this.provider.get('commands')
+        const provider = this.provider.get<Record<string, CommandOptions>>('commands')
 
         if (provider) {
           const options = provider.get(commandName).value()
@@ -307,7 +307,7 @@ class TwitchCommandClient extends EventEmitter {
       }
     }, this)
 
-    this.parser = new CommandParser(this.commands)
+    this.parser = new CommandParser(this)
   }
 
   /**
@@ -317,7 +317,7 @@ class TwitchCommandClient extends EventEmitter {
     this.registerCommandsIn(path.join(__dirname, '../commands/default'))
   }
 
-  findCommand(parserResult: CommandParserResult): TwitchChatCommand {
+  findCommand(parserResult: CommandArguments): TwitchChatCommand {
     let command: TwitchChatCommand
 
     this.commands.forEach(v => {
@@ -540,7 +540,7 @@ class TwitchCommandClient extends EventEmitter {
   private startMessagesCounterInterval(): void {
     if (this.options.enableRateLimitingControl) {
       if (this.options.verboseLogging) {
-        this.logger.debug('Starting messages counter interval')
+        this.logger.verbose('Starting messages counter interval')
       }
 
       const messageLimits = CommandConstants.MESSAGE_LIMITS[this.options.botType]
@@ -557,7 +557,7 @@ class TwitchCommandClient extends EventEmitter {
    */
   private resetMessageCounter(): void {
     if (this.options.verboseLogging) {
-      this.logger.debug('Resetting messages count')
+      this.logger.verbose('Resetting messages count')
     }
 
     this.messagesCount = 0
@@ -571,14 +571,10 @@ class TwitchCommandClient extends EventEmitter {
       const messageLimits = CommandConstants.MESSAGE_LIMITS[this.options.botType]
 
       if (this.options.verboseLogging) {
-        this.logger.warn('Messages count: ' + this.messagesCount)
+        this.logger.verbose('Messages count: ' + this.messagesCount)
       }
 
-      if (this.messagesCount < messageLimits.messages) {
-        return true
-      } else {
-        return false
-      }
+      return this.messagesCount < messageLimits.messages
     } else {
       return true
     }

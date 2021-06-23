@@ -1,20 +1,54 @@
-import { TwitchChatCommand } from './TwitchChatCommand'
+import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
 
-interface CommandParserResult {
+interface CommandArguments {
   command: string
   prefix?: string
-  args?: string[] | []
+  args?: string[]
 }
 
-class CommandParser {
-  protected commands: TwitchChatCommand[]
+type CommandParsed = Required<CommandArguments>
 
-  constructor(commands: TwitchChatCommand[]) {
-    this.commands = commands
+class CommandParser {
+  private client: TwitchCommandClient
+
+  constructor(client: TwitchCommandClient) {
+    this.client = client
   }
 
-  parse(message: string, prefix: string): CommandParserResult | null {
-    if (prefix === '?' ||
+  parse(message: string, prefix: string): CommandParsed | null {
+    const regex = new RegExp('^(' + this.escapePrefix(prefix) + ')([^\\s]+) ?(.*)', 'gims')
+    const matches = regex.exec(message)
+
+    if (matches) {
+      const prefix = matches[1]
+      const command = matches[2]
+      const result: CommandParsed = {
+        command: command,
+        prefix: prefix,
+        args: []
+      }
+
+      if (matches.length > 3) {
+        result.args =
+          matches[3]
+            .trim()
+            .split(' ')
+            .filter(v => v !== '')
+      }
+
+      if (this.client.options.verboseLogging) {
+        this.client.logger.verbose(JSON.stringify(result, null, 2))
+      }
+
+      return result
+    }
+
+    return null
+  }
+
+  private escapePrefix(prefix: string) {
+    if (
+      prefix === '?' ||
       prefix === '^' ||
       prefix === '[' ||
       prefix === ']' ||
@@ -27,30 +61,8 @@ class CommandParser {
       prefix = '\\' + prefix
     }
 
-    const regex = new RegExp('^(' + prefix + ')([^\\s]+) ?(.*)', 'gims')
-    const matches = regex.exec(message)
-
-    if (matches) {
-      const prefix = matches[1]
-      const command = matches[2]
-      let args: string[] = []
-
-      if (matches.length > 3) {
-        const argsString = matches[3].trim()
-        args = argsString.split(' ').filter(v => v !== '')
-      }
-
-      const result = {
-        command: command,
-        prefix: prefix,
-        args: args
-      }
-
-      return result
-    }
-
-    return null
+    return prefix
   }
 }
 
-export { CommandParser, CommandParserResult }
+export { CommandParser, CommandArguments }

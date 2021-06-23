@@ -1,6 +1,6 @@
 import winston from 'winston'
 
-class ClientLogger {
+export class ClientLogger {
   private log: winston.Logger
 
   constructor() {
@@ -17,6 +17,10 @@ class ClientLogger {
       level: 'silly',
       format: winston.format.json(),
       transports: [
+        new winston.transports.Console({
+          level: 'verbose',
+          format: formatter
+        }),
         new winston.transports.File({
           filename: 'log_error.log',
           level: 'error',
@@ -33,16 +37,9 @@ class ClientLogger {
         })
       ]
     })
-
-    this.log.add(new winston.transports.Console({
-      format: formatter,
-      level: 'verbose'
-    }))
   }
 
   getLogger(moduleName?: string): winston.Logger {
     return this.log.child({ service: moduleName })
   }
 }
-
-export { ClientLogger }
