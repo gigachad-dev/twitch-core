@@ -15,6 +15,13 @@ export abstract class BaseRoute {
     status: number,
     response: any
   ): Response<any, Record<string, any>> {
-    return res.status(status).json({ ok: status === 200, ...response })
+    response = typeof response === 'string' ?
+      { message: response } :
+      response
+
+    return res.status(status).json({
+      ok: status === 200,
+      ...response
+    })
   }
 }
