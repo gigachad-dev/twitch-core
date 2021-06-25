@@ -1,10 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 import morgan from 'morgan'
+import express, { Express } from 'express'
 import { CommandRoutes } from './routes/CommandRoutes'
-import { ResponseError } from './ResponseError'
 import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
-import express, { Express, Request, Response, NextFunction, ErrorRequestHandler } from 'express'
 
 export class Server {
   private client: TwitchCommandClient
@@ -29,20 +28,6 @@ export class Server {
 
   private registerRoutes(): void {
     this.app.use('/api/commands', new CommandRoutes(this.client).router)
-    this.app.use(this.onError)
-  }
-
-  private onError(
-    err: ErrorRequestHandler | any,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Response<any, Record<string, any>> {
-    if (!(err instanceof ResponseError)) {
-      err = new ResponseError(500, 'Internal error')
-    }
-
-    return res.status(err.status).json(err)
   }
 
   start(): void {
