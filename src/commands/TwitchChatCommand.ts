@@ -91,8 +91,8 @@ type NamedParameters = {
 type CommandProvider = Record<string, CommandOptions>
 
 class TwitchChatCommand {
-  readonly options: CommandOptions
-  readonly client: TwitchCommandClient
+  public options: CommandOptions
+  public client: TwitchCommandClient
 
   constructor(client: TwitchCommandClient, options: CommandOptions) {
     this.options = options
