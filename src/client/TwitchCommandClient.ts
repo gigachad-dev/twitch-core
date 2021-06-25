@@ -330,21 +330,17 @@ class TwitchCommandClient extends EventEmitter {
   }
 
   findCommand(parserResult: CommandArguments): TwitchChatCommand {
-    let command: TwitchChatCommand
-
-    this.commands.forEach(v => {
-      if (parserResult.command === v.options.name) command = v
+    return this.commands.find(command => {
+      if (parserResult.command === command.options.name) return command
 
       if (
         !command &&
-        v.options.aliases &&
-        v.options.aliases.length > 0
+        command.options.aliases &&
+        command.options.aliases.length > 0
       ) {
-        if (v.options.aliases.includes(parserResult.command)) command = v
+        if (command.options.aliases.includes(parserResult.command)) return command
       }
-    }, this)
-
-    return command
+    })
   }
 
   /**
@@ -420,6 +416,7 @@ class TwitchCommandClient extends EventEmitter {
 
     if (parserResult) {
       const command = this.findCommand(parserResult)
+      console.log(command)
 
       if (command) {
         const preValidateResponse = command.preValidate(msg)
