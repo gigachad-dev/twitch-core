@@ -4,6 +4,7 @@ export { TwitchCommandClient, ClientOptions, TwitchOptions, ChatterState } from 
 export { TwitchChatUser } from './users/TwitchChatUser'
 export { TwitchChatMessage } from './messages/TwitchChatMessage'
 export { TwitchChatChannel } from './channels/TwitchChatChannel'
+export { TextCommand } from './commands/TextCommand'
 export { CommandParser } from './commands/CommandParser'
 export { TwitchChatCommand, CommandOptions, CommandArgument } from './commands/TwitchChatCommand'
 export { SettingsProvider } from './settings/SettingsProvider'
