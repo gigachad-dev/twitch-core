@@ -3,7 +3,7 @@ import path from 'path'
 import morgan from 'morgan'
 import express, { Express } from 'express'
 import { CommandRoutes } from './routes/CommandRoutes'
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
+import { TwitchCommandClient } from '../client/TwitchCommandClient'
 
 export class Server {
   private client: TwitchCommandClient

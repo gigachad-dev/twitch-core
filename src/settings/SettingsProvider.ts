@@ -1,7 +1,7 @@
 import path from 'path'
 import Lowdb from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
+import { TwitchCommandClient } from '../client/TwitchCommandClient'
 
 export class SettingsProvider {
   private client: TwitchCommandClient

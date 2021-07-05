@@ -2,10 +2,6 @@ import { CommandOptions, TwitchChatCommand } from '../TwitchChatCommand'
 import { TwitchChatMessage } from '../../messages/TwitchChatMessage'
 import { TwitchCommandClient } from '../../client/TwitchCommandClient'
 
-interface CommandArgs {
-  command: string
-}
-
 export default class Commands extends TwitchChatCommand {
   constructor(client: TwitchCommandClient, options: CommandOptions) {
     super(client, {
@@ -29,7 +25,9 @@ export default class Commands extends TwitchChatCommand {
     })
   }
 
-  async run(msg: TwitchChatMessage, { command }: CommandArgs): Promise<void> {
+  async run(msg: TwitchChatMessage, { command }: {
+    command: string
+  }): Promise<void> {
     if (command?.length > 0) {
       this.commandHelp(msg, command)
     } else {

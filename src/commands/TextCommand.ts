@@ -1,5 +1,5 @@
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
-import { TwitchChatMessage } from 'src/messages/TwitchChatMessage'
+import { TwitchCommandClient } from '../client/TwitchCommandClient'
+import { TwitchChatMessage } from '../messages/TwitchChatMessage'
 import { CommandOptions, TwitchChatCommand } from './TwitchChatCommand'
 
 export class TextCommand extends TwitchChatCommand {

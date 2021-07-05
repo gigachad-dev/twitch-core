@@ -1,8 +1,8 @@
 import Lowdb from 'lowdb'
 import { BaseRoute } from './BaseRoute'
 import { Router, Request, Response, NextFunction } from 'express'
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
-import { CommandOptions, CommandProvider } from 'src/commands/TwitchChatCommand'
+import { TwitchCommandClient } from '../../client/TwitchCommandClient'
+import { CommandOptions, CommandProvider } from '../../commands/TwitchChatCommand'
 
 export class CommandRoutes extends BaseRoute {
   client: TwitchCommandClient
@@ -20,7 +20,7 @@ export class CommandRoutes extends BaseRoute {
 
   private getCommands(req: Request, res: Response) {
     const commands = this.commands.getState()
-    return res.status(200).json(commands)
+    return this.response(res, 200, { commands })
   }
 
   private getCommandByName(req: Request, res: Response) {

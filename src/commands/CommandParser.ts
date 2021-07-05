@@ -1,4 +1,4 @@
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
+import { TwitchCommandClient } from '../client/TwitchCommandClient'
 
 interface CommandArguments {
   command: string

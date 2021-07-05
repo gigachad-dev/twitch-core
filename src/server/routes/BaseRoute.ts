@@ -1,5 +1,5 @@
 import { Response, Router } from 'express'
-import { TwitchCommandClient } from 'src/client/TwitchCommandClient'
+import { TwitchCommandClient } from '../../client/TwitchCommandClient'
 
 export abstract class BaseRoute {
   client: TwitchCommandClient
