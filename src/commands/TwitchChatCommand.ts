@@ -84,9 +84,7 @@ type UserLevels =
   'moderator' |
   'broadcaster'
 
-type NamedParameters = {
-  [key: string]: string | number | boolean
-}
+type NamedParameters = Record<string, string | number | boolean>
 
 type CommandProvider = Record<string, CommandOptions>
 
@@ -109,6 +107,7 @@ class TwitchChatCommand {
 
   /**
    * Method called when command is executed
+   * TODO: Fix types
    *
    * @param msg
    * @param parameters
