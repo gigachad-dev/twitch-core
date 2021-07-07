@@ -10,43 +10,42 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/twitch-core" target="_blank"><img alt="npm" src="https://img.shields.io/npm/v/twitch-core"></a>
-  <img alt="David" src="https://img.shields.io/david/crashmax-dev/twitch-core">
   <img alt="Size" src="https://img.shields.io/bundlephobia/minzip/twitch-core">
 </p>
 
-## Установка
+## Installation
 
-с помощью npm
+with npm:
 
 ```
 npm install twitch-core
 ```
 
-или yarn
+or yarn:
 
 ```
 yarn add twitch-core
 ```
 
-## Возможности
+## Features
+* Automatic command parsing
+* Automatic parsing of command arguments and conversion to named variables with type preservation
+* All commands run asynchronously
+* You can configure the prefix of commands
+* Loading configuration files
+* TypeScript definitions 
 
-* Автоматический парсинг команд
-* Автоматический парсинг аргументов команды и преобразование в именованные переменные с сохранением типов
-* Команды выполняются в асинхронном режиме
-* Настраиваемый префикс команды
-* Подгрузка файлов конфигурации
-* TypeScript definitions
-
-## Базовая настройка клиента
+## Base settings for the client
 
 ```ts
-import path from 'path'
+import { join } from 'path'
 import { TwitchCommandClient, TwitchChatMessage } from 'twitch-core'
 
 const client = new TwitchCommandClient({
-  username: 'VS_Code',
+  username: 'vs_code',
   oauth: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-  channels: ['ArchikOFF']
+  channels: ['archikoff', 'le_xot'],
+  botOwners: ['vs_code']
 })
 
 client.on('connected', () => {})
@@ -57,27 +56,33 @@ client.on('error', err => { })
 
 client.on('message', (msg: TwitchChatMessage) => { })
 
-client.setProviders(
-  path.join(__dirname, 'config/commands.json'),
-  path.join(__dirname, 'config/config.json')
+client.provider.set(
+  join(__dirname, 'config/text-commands.json'),
+  join(__dirname, 'config/commands.json')
 )
+
+client.registerTextCommands()
 
 client.registerDefaultCommands()
 
-client.registerCommandsIn(path.join(__dirname, 'commands'))
+client.registerCommandsIn(
+  join(__dirname, '/commands')
+)
 
 client.connect()
 ```
 
-Клиент расширяет `EventEmitter`, поэтому вы можете легко подписаться на его событие.
+> Client extends of `EventEmitter`, so you can easily subscribe to his events.
 
-Используя `registerDefaultCommands`, вы регистрируете стандартные команды бота, такие какие `!commands`, `!help` и т.д.
+> You can register the bot's default commands (`!commands`, `!help`, etc.), using method `registerDefaultCommands`.
 
-Создайте папку с именем `commands` в которой у вас будут находиться команды.
+> Method `registerTextCommands` allows loading text commands, using `text-commands.json` config.
 
-Не забудьте вызвать `registerCommandsIn`, чтобы зарегистрировать свои собственные команды.
+> Create folder called `commands`, that will contain all your commands.
 
-## Создание стандартной команды
+> Don't forget to call method `registerCommandsIn`, to register your own commands.
+
+## Creating a standard command
 
 ```ts
 import { TwitchChatCommand, TwitchCommandClient, TwitchChatMessage, CommandOptions } from 'twitch-core'
@@ -88,7 +93,7 @@ class Example extends TwitchChatCommand {
       name: 'example',
       group: 'system',
       userlevel: 'everyone',
-      description: 'Пример команды',
+      description: 'Example command',
       examples: [
         '!example',
         '!example <args>'
@@ -104,12 +109,12 @@ class Example extends TwitchChatCommand {
 export default Example
 ```
 
-## Команда с именованными аргументами
+## Command with named arguments
 
 ```ts
 import { TwitchChatCommand, TwitchCommandClient, TwitchChatMessage, CommandOptions } from 'twitch-core'
 
-type CommandArgs = {
+interface CommandArgs {
   name: string
   age: number
   bool: boolean
@@ -121,7 +126,7 @@ class ExampleArgs extends TwitchChatCommand {
       name: 'example-args',
       group: 'system',
       userlevel: 'everyone',
-      description: 'Пример команды c именнованными аргументами',
+      description: 'Example of command with named arguments',
       examples: [
         '!example',
         '!example <args>'
@@ -152,21 +157,30 @@ class ExampleArgs extends TwitchChatCommand {
 export default ExampleArgs
 ```
 
-## Параметры команд
+## User bots (examples)
 
-* **name** : Название команды (стандартный алиас команды)
-* **group** : Группа команд (временно не используется!)
-* **description** : Описание команды (используется в `!help <command>`)
-* **userlevel** : Уровень доступа (`everyone`, `regular`, `vip`, `subscriber`, `moderator`, `broadcaster`)
-* **message** ?: Сообщения команды (временно не используется!)
-* **examples** ?: Примеры пользования командой (используется в `!help <command>`)
-* **args** ?: Создание именнованых аргументов команды
-* **aliases** ?: Дополнительные алиасы команды
-* **botChannelOnly** ?: Команда доступна только на канале бота (если в клиенте включен `autoJoinBotChannel`)
-* **hideFromHelp** ?: Скрыть команду из списка `!commands`
-* **privmsgOnly** ?: Команда доступна только в личном сообщении бота
+* [crashmax-dev/twitch-bot](https://github.com/crashmax-dev/twitch-bot)
+* [crashmax-dev/twitch-bot-example](https://github.com/crashmax-dev/twitch-bot-example)
 
-## Стандартные команды
+> Create [issues](https://github.com/crashmax-dev/twitch-core/issues/new) to add your bot 👍
 
-* **!commands** : Список команд бота
-* **!help \<command\>** : Подробная информация о команде
+## Commands params
+
+* **name**: Name of command (default alias of command)
+* **group**: Commands group (temporarily not used!)
+* **description**: Description of command (using at `!help <command>`)
+* **userlevel**: Access level (`everyone`, `regular`, `vip`, `subscriber`, `moderator`, `broadcaster`)
+* **examples**?: Examples for command (using in `!help <command>`)
+* **args**?: Creating named command arguments
+* **aliases**?: Additional command aliases
+* **botChannelOnly**?: The command is only available on the bot channel (if you have enabled `autoJoinBotChannel` in client constructor)
+* **hideFromHelp**?: Do we need to hide command from `!commands` list?
+* **privmsgOnly**?: Answer to command only at PM?
+
+## Text command params (also implements the options above)
+* **text**: Message text 
+* **messageType**?: Message send type (`reply`, `actionReply`, `say`, `actionSay`)
+
+## Default commands
+* **!commands**: All registered commands
+* **!help \<command\>**: Help with command (detailed information)
