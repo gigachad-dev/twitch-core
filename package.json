@@ -1,12 +1,12 @@
 {
     "name": "twitch-core",
-    "version": "1.0.0-rc19",
+    "version": "1.0.0-rc20",
     "description": "Twitch bot command client",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
         "dev": "nodemon",
-        "build": "tsc",
+        "build": "rimraf dist/ && tsc",
         "lint": "eslint src/**/*.ts",
         "lint:fix": "eslint src/**/*.ts --fix"
     },

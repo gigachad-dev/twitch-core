@@ -1,5 +1,5 @@
 src/
-tests/
+example/
 .vscode/
 docs/
 *.log
