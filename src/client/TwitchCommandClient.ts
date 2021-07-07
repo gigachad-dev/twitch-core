@@ -318,7 +318,7 @@ class TwitchCommandClient extends EventEmitter {
           if (options) {
             this.commands.push(new commandFile(this, options))
           } else {
-            this.logger.warn(`${commandName} config is not found`)
+            this.logger.warn(`Command '${commandName}' config is not found (internal configuration is used)`)
           }
         } else {
           this.commands.push(new commandFile(this))
