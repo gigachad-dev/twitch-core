@@ -23,9 +23,15 @@ interface CommandOptions {
   userlevel: UserLevels
 
   /**
-   * Command message text (not used!)
+   * Command message text (used on text commands!)
    */
-  message?: string
+  text?: string
+
+  /**
+   * Message send type (used on text commands!)
+   * default: (reply)
+   */
+  messageType?: MessageTypes
 
   /**
    * Command examples (requited for output to !help <command>)
@@ -75,6 +81,12 @@ interface CommandArgument {
    */
   defaultValue?: string | number | boolean
 }
+
+type MessageTypes =
+  'reply' |
+  'actionReply' |
+  'send' |
+  'actionSend'
 
 type UserLevels =
   'vip' |

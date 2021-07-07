@@ -9,19 +9,22 @@ const client = new TwitchCommandClient({
   oauth: process.env.OAUTH_KEY,
   channels: [process.env.CHANNEL],
   verboseLogging: false,
-  botOwners: ['vs_code'],
-  serverPort: 9999
+  botOwners: ['vs_code']
 })
 
 client.on('message', (msg: TwitchChatMessage) => { })
 
 client.provider.set(
   path.join(__dirname, 'config/commands.json'),
-  path.join(__dirname, 'config/config.json')
+  path.join(__dirname, 'config/text-commands.json')
 )
+
+client.registerTextCommands()
 
 client.registerDefaultCommands()
 
-client.registerCommandsIn(path.join(__dirname, 'commands'))
+client.registerCommandsIn(
+  path.join(__dirname, '/commands')
+)
 
 client.connect()

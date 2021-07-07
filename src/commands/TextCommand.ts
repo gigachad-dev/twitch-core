@@ -8,6 +8,6 @@ export class TextCommand extends TwitchChatCommand {
   }
 
   async run(msg: TwitchChatMessage) {
-    msg.reply(this.options.message)
+    msg[this.options.messageType](this.options.text)
   }
 }

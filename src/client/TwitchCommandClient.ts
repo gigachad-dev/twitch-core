@@ -12,8 +12,9 @@ import { CommandParser, CommandArguments } from '../commands/CommandParser'
 import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
-import { TwitchChatCommand, CommandProvider } from '../commands/TwitchChatCommand'
+import { TwitchChatCommand, CommandProvider, CommandOptions } from '../commands/TwitchChatCommand'
 import { SettingsProvider } from '../settings/SettingsProvider'
+import { TextCommand } from '../commands/TextCommand'
 
 type MessageLimits = keyof typeof CommandConstants.MESSAGE_LIMITS
 
@@ -175,6 +176,7 @@ class TwitchCommandClient extends EventEmitter {
 
     this.checkOptions()
 
+    this.parser = new CommandParser(this)
     this.emotesManager = new EmotesManager(this)
     await this.emotesManager.getGlobalEmotes()
 
@@ -327,8 +329,24 @@ class TwitchCommandClient extends EventEmitter {
         this.logger.warn('You are not export default class correctly!')
       }
     }, this)
+  }
 
-    this.parser = new CommandParser(this)
+  /**
+   * Register text commands
+   */
+  registerTextCommands() {
+    const commands = this.provider.get<CommandOptions[]>('text-commands')
+
+    commands.getState().forEach(options => {
+      if (!options.messageType) {
+        options = {
+          messageType: 'reply',
+          ...options
+        }
+      }
+
+      this.commands.push(new TextCommand(this, options))
+    })
   }
 
   /**

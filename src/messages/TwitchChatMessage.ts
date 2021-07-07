@@ -114,7 +114,7 @@ class TwitchChatMessage {
    * @param text
    * @param addRandomEmote
    */
-  async action(text: string, addRandomEmote = false): Promise<[string]> {
+  async actionSend(text: string, addRandomEmote = false): Promise<[string]> {
     return this.client.action(this.channel.name, text, addRandomEmote)
   }
 }

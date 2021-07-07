@@ -60,7 +60,11 @@ export default class Commands extends TwitchChatCommand {
         messageText += ', Использование: ' + selectedCommand.options.examples.join(', ')
       }
 
-      msg.reply(messageText)
+      if (messageText) {
+        msg.reply(messageText)
+      } else {
+        msg.reply(`у команды '${command}' отсутствует описание`)
+      }
     } else {
       msg.reply(`команда '${command}' не найдена`)
     }
