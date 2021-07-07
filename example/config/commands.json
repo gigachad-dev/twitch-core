@@ -1,10 +1,4 @@
 {
-  "Commands": {
-    "aliases": [
-      "help",
-      "команды"
-    ]
-  },
   "Example": {
     "name": "example",
     "group": "system",

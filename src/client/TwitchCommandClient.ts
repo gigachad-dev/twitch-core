@@ -310,21 +310,15 @@ class TwitchCommandClient extends EventEmitter {
       }
 
       if (typeof commandFile === 'function') {
+        let options: CommandOptions
         const commandName = commandFile.name as string
 
         if (commandProvider) {
-          const options = commandProvider.get(commandName).value()
-
-          if (options) {
-            this.commands.push(new commandFile(this, options))
-          } else {
-            this.logger.warn(`Command '${commandName}' config is not found (internal configuration is used)`)
-          }
-        } else {
-          this.commands.push(new commandFile(this))
+          options = commandProvider.get(commandName).value()
         }
 
-        this.logger.info(`Register command ${commandName}`)
+        this.commands.push(new commandFile(this, options))
+        this.logger.info(`Register command ${commandName} ${options ? '(external options)' : '(internal options)'}`)
       } else {
         this.logger.warn('You are not export default class correctly!')
       }
