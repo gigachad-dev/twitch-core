@@ -89,16 +89,6 @@ class TwitchChatMessage {
   }
 
   /**
-   * Helper method to send message
-   *
-   * @param text
-   * @param addRandomEmote
-   */
-  async send(text: string, addRandomEmote = false): Promise<[string]> {
-    return this.client.say(this.channel.name, text, addRandomEmote)
-  }
-
-  /**
    * Helper method to reply quickly to a message with an action
    *
    * @param text
@@ -109,12 +99,22 @@ class TwitchChatMessage {
   }
 
   /**
+   * Helper method to send message
+   *
+   * @param text
+   * @param addRandomEmote
+   */
+  async say(text: string, addRandomEmote = false): Promise<[string]> {
+    return this.client.say(this.channel.name, text, addRandomEmote)
+  }
+
+  /**
    * Helper method to a message with an action
    *
    * @param text
    * @param addRandomEmote
    */
-  async actionSend(text: string, addRandomEmote = false): Promise<[string]> {
+  async actionSay(text: string, addRandomEmote = false): Promise<[string]> {
     return this.client.action(this.channel.name, text, addRandomEmote)
   }
 }

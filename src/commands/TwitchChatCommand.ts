@@ -85,8 +85,8 @@ interface CommandArgument {
 type MessageTypes =
   'reply' |
   'actionReply' |
-  'send' |
-  'actionSend'
+  'say' |
+  'actionSay'
 
 type UserLevels =
   'vip' |
