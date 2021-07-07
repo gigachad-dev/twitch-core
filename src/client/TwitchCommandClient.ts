@@ -62,9 +62,14 @@ interface ClientOptions {
   botOwners?: string[]
 
   /**
-   * Express server port (default: 8080)
+   * Server port (default: 8080)
    */
   serverPort?: number
+
+  /**
+   * Enable server (default: false)
+   */
+  enableServer?: boolean
 
   /**
    * Default command prefix (default: !)
@@ -128,6 +133,7 @@ class TwitchCommandClient extends EventEmitter {
       channels: [],
       botOwners: [],
       serverPort: 8080,
+      enableServer: false,
       onJoinMessage: '',
       greetOnJoin: false,
       verboseLogging: false,
@@ -137,7 +143,6 @@ class TwitchCommandClient extends EventEmitter {
     }
 
     this.options = Object.assign(defaultOptions, options)
-    this.server = new Server(this, this.options.serverPort)
     this.provider = new SettingsProvider(this)
     this.logger = new ClientLogger().getLogger('main')
     this.commands = []
@@ -163,7 +168,11 @@ class TwitchCommandClient extends EventEmitter {
    * Connect the bot to Twitch Chat
    */
   async connect(): Promise<void> {
-    this.server.start()
+    if (this.options.enableServer) {
+      this.server = new Server(this, this.options.serverPort)
+      this.server.start()
+    }
+
     this.checkOptions()
 
     this.emotesManager = new EmotesManager(this)
