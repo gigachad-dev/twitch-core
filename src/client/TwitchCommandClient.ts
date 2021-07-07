@@ -298,6 +298,7 @@ class TwitchCommandClient extends EventEmitter {
    */
   registerCommandsIn(path: string): void {
     const files = readdir(path)
+    const commandProvider = this.provider.get<CommandProvider>('commands')
 
     files.forEach((file: string) => {
       if (!file.match('.*(?<!\.d\.ts)$')) return
@@ -310,10 +311,9 @@ class TwitchCommandClient extends EventEmitter {
 
       if (typeof commandFile === 'function') {
         const commandName = commandFile.name as string
-        const provider = this.provider.get<CommandProvider>('commands')
 
-        if (provider) {
-          const options = provider.get(commandName).value()
+        if (commandProvider) {
+          const options = commandProvider.get(commandName).value()
 
           if (options) {
             this.commands.push(new commandFile(this, options))
@@ -335,9 +335,9 @@ class TwitchCommandClient extends EventEmitter {
    * Register text commands
    */
   registerTextCommands() {
-    const commands = this.provider.get<CommandOptions[]>('text-commands')
+    const textProvider = this.provider.get<CommandOptions[]>('text-commands')
 
-    commands.getState().forEach(options => {
+    textProvider.getState().forEach(options => {
       if (!options.messageType) {
         options = {
           messageType: 'reply',
