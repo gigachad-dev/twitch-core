@@ -1,6 +1,6 @@
 {
     "name": "twitch-core",
-    "version": "1.0.0-rc18",
+    "version": "1.0.0-rc19",
     "description": "Twitch bot command client",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
