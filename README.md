@@ -157,12 +157,12 @@ class ExampleArgs extends TwitchChatCommand {
 export default ExampleArgs
 ```
 
-## User bots (examples)
+## Example bots
 
 * [crashmax-dev/twitch-bot](https://github.com/crashmax-dev/twitch-bot)
 * [crashmax-dev/twitch-bot-example](https://github.com/crashmax-dev/twitch-bot-example)
 
-> Create [issues](https://github.com/crashmax-dev/twitch-core/issues/new) to add your bot 👍
+> Create [issue](https://github.com/crashmax-dev/twitch-core/issues/new) to add your bot 👍
 
 ## Commands params
 
@@ -173,7 +173,7 @@ export default ExampleArgs
 * **examples**?: Examples for command (using in `!help <command>`)
 * **args**?: Creating named command arguments
 * **aliases**?: Additional command aliases
-* **botChannelOnly**?: The command is only available on the bot channel (if you have enabled `autoJoinBotChannel` in client constructor)
+* **botChannelOnly**?: Is thing command only available on the bot channel (if you have enabled `autoJoinBotChannel` in client constructor)?
 * **hideFromHelp**?: Do we need to hide command from `!commands` list?
 * **privmsgOnly**?: Answer to command only at PM?
 
