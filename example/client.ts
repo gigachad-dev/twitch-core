@@ -27,4 +27,3 @@ client.registerCommandsIn(
 )
 
 client.connect()
-console.log(client.options)
