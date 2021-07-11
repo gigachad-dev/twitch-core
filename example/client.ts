@@ -9,7 +9,7 @@ const client = new TwitchCommandClient({
   oauth: process.env.OAUTH_KEY,
   channels: [process.env.CHANNEL],
   verboseLogging: false,
-  botOwners: ['vs_code']
+  botOwners: [process.env.BOT_USERNAME]
 })
 
 client.on('message', (msg: TwitchChatMessage) => { })
@@ -28,3 +28,4 @@ client.registerCommandsIn(
 )
 
 client.connect()
+console.log(client.options)

@@ -129,14 +129,15 @@ class TwitchCommandClient extends EventEmitter {
   constructor(options: ClientOptions) {
     super()
 
+    options.username = options.username.toLowerCase()
+    options.botOwners = this.toLowerArray(options.botOwners)
+    options.channels = this.toLowerArray(options.botOwners)
+
     const defaultOptions = {
       prefix: '!',
-      channels: [],
-      botOwners: [],
       serverPort: 8080,
-      enableServer: false,
-      onJoinMessage: '',
       greetOnJoin: false,
+      enableServer: false,
       verboseLogging: false,
       autoJoinBotChannel: false,
       enableRateLimitingControl: true,
@@ -605,6 +606,10 @@ class TwitchCommandClient extends EventEmitter {
     } else {
       return true
     }
+  }
+
+  private toLowerArray(arr: string[]): string[] {
+    return arr.map(v => v.toLowerCase())
   }
 }
 
