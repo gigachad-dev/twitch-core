@@ -8,8 +8,7 @@ const client = new TwitchCommandClient({
   username: process.env.BOT_USERNAME,
   oauth: process.env.OAUTH_KEY,
   channels: [process.env.CHANNEL],
-  verboseLogging: false,
-  botOwners: [process.env.BOT_USERNAME]
+  verboseLogging: false
 })
 
 client.on('message', (msg: TwitchChatMessage) => { })

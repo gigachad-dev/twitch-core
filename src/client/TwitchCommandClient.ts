@@ -129,10 +129,6 @@ class TwitchCommandClient extends EventEmitter {
   constructor(options: ClientOptions) {
     super()
 
-    options.username = options.username.toLowerCase()
-    options.botOwners = this.toLowerArray(options.botOwners)
-    options.channels = this.toLowerArray(options.botOwners)
-
     const defaultOptions = {
       prefix: '!',
       serverPort: 8080,
@@ -145,6 +141,8 @@ class TwitchCommandClient extends EventEmitter {
     }
 
     this.options = Object.assign(defaultOptions, options)
+    this.checkOptions()
+
     this.provider = new SettingsProvider(this)
     this.logger = new ClientLogger().getLogger('main')
     this.commands = []
@@ -157,12 +155,25 @@ class TwitchCommandClient extends EventEmitter {
       throw new Error('Invalid prefix. Cannot be /')
     }
 
+    if (this.options.channels === undefined) {
+      throw new Error('Channels not specified')
+    }
+
     if (this.options.username === undefined) {
       throw new Error('Username not specified')
     }
 
     if (this.options.oauth === undefined) {
       throw new Error('Oauth password not specified')
+    }
+
+    this.options.username = this.options.username.toLowerCase()
+    this.options.channels = this.toLowerArray(this.options.channels)
+
+    if (this.options.botOwners === undefined) {
+      this.options.botOwners = [this.options.username]
+    } else {
+      this.options.botOwners = this.toLowerArray(this.options.botOwners)
     }
   }
 
@@ -174,8 +185,6 @@ class TwitchCommandClient extends EventEmitter {
       this.server = new Server(this, this.options.serverPort)
       this.server.start()
     }
-
-    this.checkOptions()
 
     this.parser = new CommandParser(this)
     this.emotesManager = new EmotesManager(this)
