@@ -460,7 +460,7 @@ class TwitchCommandClient extends EventEmitter {
               this.emit('commandError', err)
             })
         } else {
-          msg.reply(preValidateResponse, true)
+          msg.reply(preValidateResponse, false)
         }
       }
     }
