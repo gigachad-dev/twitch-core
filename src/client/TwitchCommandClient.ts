@@ -13,7 +13,7 @@ import { TwitchChatUser } from '../users/TwitchChatUser'
 import { TwitchChatChannel } from '../channels/TwitchChatChannel'
 import { TwitchChatMessage } from '../messages/TwitchChatMessage'
 import { TwitchChatCommand, CommandProvider, CommandOptions } from '../commands/TwitchChatCommand'
-import { SettingsProvider } from '../settings/SettingsProvider'
+import { SettingsProvider, TextCommandProvider } from '../settings/SettingsProvider'
 import { TextCommand } from '../commands/TextCommand'
 
 type MessageLimits = keyof typeof CommandConstants.MESSAGE_LIMITS
@@ -143,7 +143,7 @@ class TwitchCommandClient extends EventEmitter {
     this.options = Object.assign(defaultOptions, options)
     this.checkOptions()
 
-    this.provider = new SettingsProvider(this)
+    this.provider = new SettingsProvider()
     this.logger = new ClientLogger().getLogger('main')
     this.commands = []
     this.channelsWithMod = []
@@ -308,7 +308,8 @@ class TwitchCommandClient extends EventEmitter {
    */
   registerCommandsIn(path: string): void {
     const files = readdir(path)
-    const commandProvider = this.provider.get<CommandProvider>('commands')
+    const commandProvider = this.provider
+      .get<CommandProvider>('commands')
 
     files.forEach((file: string) => {
       if (!file.match('.*(?<!\.d\.ts)$')) return
@@ -324,11 +325,13 @@ class TwitchCommandClient extends EventEmitter {
         const commandName = commandFile.name as string
 
         if (commandProvider) {
-          options = commandProvider.get(commandName).value()
+          options = commandProvider
+            .get(commandName)
+            .value()
         }
 
         this.commands.push(new commandFile(this, options))
-        this.logger.info(`Register command ${commandName} ${options ? '(external options)' : '(internal options)'}`)
+        this.logger.info(`Register command ${commandName} ${options ? '(external option)' : '(internal option)'}`)
       } else {
         this.logger.warn('You are not export default class correctly!')
       }
@@ -339,18 +342,27 @@ class TwitchCommandClient extends EventEmitter {
    * Register text commands
    */
   registerTextCommands() {
-    const textProvider = this.provider.get<CommandOptions[]>('text-commands')
+    const provider = this.provider
+      .get<TextCommandProvider>('text-commands')
 
-    textProvider.getState().forEach(options => {
-      if (!options.messageType) {
-        options = {
-          messageType: 'reply',
-          ...options
-        }
-      }
+    if (provider) {
+      provider
+        .get('commands')
+        .value()
+        .forEach(options => {
+          if (!options.messageType) {
+            options = {
+              messageType: 'reply',
+              ...options
+            }
+          }
 
-      this.commands.push(new TextCommand(this, options))
-    })
+          this.commands.push(new TextCommand(this, options))
+          this.logger.info(`Register text command ${options.name}`)
+        })
+    } else {
+      this.logger.warn('Text command provider text-commands.json is not registered!')
+    }
   }
 
   /**

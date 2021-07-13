@@ -6,9 +6,8 @@ export default class Commands extends TwitchChatCommand {
   constructor(client: TwitchCommandClient, options: CommandOptions) {
     super(client, {
       name: 'commands',
-      group: 'system',
       userlevel: 'everyone',
-      description: `Эта команда показывает список всех команд. Отправьте ${client.options.prefix}help <command> для получения подробной информации о команде.`,
+      description: `This command shows help for all commands. Send ${client.options.prefix}help <command> for detailed help on a command.`,
       aliases: [
         'help'
       ],
@@ -45,28 +44,28 @@ export default class Commands extends TwitchChatCommand {
       }
     }
 
-    msg.reply(`Список команд → ${commands.join(', ')}`)
+    msg.reply(`Commands → ${commands.join(', ')}`)
   }
 
   commandHelp(msg: TwitchChatMessage, command: string): void {
-    const selectedCommand = this.client.commands.find(cmd => {
-      return cmd.options.name === command && !cmd.options.hideFromHelp
+    const selectedCommand = this.client.commands.find(({ options }) => {
+      return options.name === command && !options.hideFromHelp
     })
 
     if (selectedCommand) {
       let messageText = selectedCommand.options.description
 
       if (selectedCommand.options.examples?.length > 0) {
-        messageText += ', Использование: ' + selectedCommand.options.examples.join(', ')
+        messageText += ', Usage: ' + selectedCommand.options.examples.join(', ')
       }
 
       if (messageText) {
         msg.reply(messageText)
       } else {
-        msg.reply(`у команды '${command}' отсутствует описание`)
+        msg.reply('Help text not found')
       }
     } else {
-      msg.reply(`команда '${command}' не найдена`)
+      msg.reply('Command not found')
     }
   }
 }

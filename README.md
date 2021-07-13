@@ -91,7 +91,6 @@ class Example extends TwitchChatCommand {
   constructor(client: TwitchCommandClient, options: CommandOptions) {
     super(client, {
       name: 'example',
-      group: 'system',
       userlevel: 'everyone',
       description: 'Example command',
       examples: [
@@ -124,7 +123,6 @@ class ExampleArgs extends TwitchChatCommand {
   constructor(client: TwitchCommandClient, options: CommandOptions) {
     super(client, {
       name: 'example-args',
-      group: 'system',
       userlevel: 'everyone',
       description: 'Example of command with named arguments',
       examples: [
@@ -167,7 +165,6 @@ export default ExampleArgs
 ## Commands params
 
 * **name**: Name of command (default alias of command)
-* **group**: Commands group (temporarily not used!)
 * **description**: Description of command (using at `!help <command>`)
 * **userlevel**: Access level (`everyone`, `regular`, `vip`, `subscriber`, `moderator`, `broadcaster`)
 * **examples**?: Examples for command (using in `!help <command>`)
@@ -178,7 +175,7 @@ export default ExampleArgs
 * **privmsgOnly**?: Answer to command only at PM?
 
 ## Text command params (also implements the options above)
-* **text**: Message text 
+* **text**: Message text
 * **messageType**?: Message send type (`reply`, `actionReply`, `say`, `actionSay`)
 
 ## Default commands

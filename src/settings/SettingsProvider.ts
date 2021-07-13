@@ -1,14 +1,32 @@
 import path from 'path'
 import Lowdb from 'lowdb'
 import FileSync from 'lowdb/adapters/FileSync'
-import { TwitchCommandClient } from '../client/TwitchCommandClient'
+import { CommandOptions } from '../commands/TwitchChatCommand'
 
-export class SettingsProvider {
-  private client: TwitchCommandClient
+interface TextCommandProvider {
+  options: unknown,
+  commands: CommandOptions[]
+}
+
+class SettingsProvider {
   private providers: Record<string, Lowdb.LowdbSync<any>>
+  private defaults: Record<string, () => Record<string, unknown>>
 
-  constructor(client: TwitchCommandClient) {
-    this.client = client
+  constructor() {
+    this.defaults = {
+      'commands': () => {
+        return {
+          Commands: {},
+          TextCommandsManager: {}
+        }
+      },
+      'text-commands': () => {
+        return {
+          options: {},
+          commands: []
+        }
+      }
+    }
   }
 
   /**
@@ -23,6 +41,10 @@ export class SettingsProvider {
       const provider = Lowdb(
         new FileSync(file)
       )
+
+      provider
+        .defaults(this.defaults[name]?.call(this))
+        .write()
 
       this.providers = {
         ...this.providers,
@@ -41,3 +63,5 @@ export class SettingsProvider {
     return this.providers[name] as Lowdb.LowdbSync<T>
   }
 }
+
+export { SettingsProvider, TextCommandProvider }

@@ -8,19 +8,9 @@ interface CommandOptions {
   name: string
 
   /**
-   * Command group (not used!)
-   */
-  group: string
-
-  /**
-   * Command description (required for output to !help <command>)
-   */
-  description: string
-
-  /**
    * Userlevel access (everyone, regular, vip, subscriber, moderator, broadcaster)
    */
-  userlevel: UserLevels
+  userlevel: keyof typeof UserLevel
 
   /**
    * Command message text (used on text commands!)
@@ -28,10 +18,15 @@ interface CommandOptions {
   text?: string
 
   /**
+   * Command description (required for output to !help <command>)
+   */
+  description?: string
+
+  /**
    * Message send type (used on text commands!)
    * default: (reply)
    */
-  messageType?: MessageTypes
+  messageType?: keyof typeof MessageType
 
   /**
    * Command examples (requited for output to !help <command>)
@@ -82,19 +77,21 @@ interface CommandArgument {
   defaultValue?: string | number | boolean
 }
 
-type MessageTypes =
-  'reply' |
-  'actionReply' |
-  'say' |
-  'actionSay'
+enum UserLevel {
+  vip = 'vip',
+  everyone = 'everyone',
+  regular = 'regular',
+  subscriber = 'subscriber',
+  moderator = 'moderator',
+  broadcaster = 'broadcaster'
+}
 
-type UserLevels =
-  'vip' |
-  'everyone' |
-  'regular' |
-  'subscriber' |
-  'moderator' |
-  'broadcaster'
+enum MessageType {
+  reply = 'reply',
+  actionReply = 'actionReply',
+  say = 'say',
+  actionSay = 'actionSay'
+}
 
 type NamedParameters = Record<string, string | number | boolean>
 
@@ -115,7 +112,7 @@ class TwitchChatCommand {
    * @param msg
    * @param chatter
    */
-  async execute(msg: TwitchChatMessage): Promise<void> { }
+  async execute(msg: TwitchChatMessage): Promise<any> { }
 
   /**
    * Method called when command is executed
@@ -124,7 +121,7 @@ class TwitchChatCommand {
    * @param msg
    * @param parameters
    */
-  async run(msg: TwitchChatMessage, parameters: unknown): Promise<void> { }
+  async run(msg: TwitchChatMessage, parameters: unknown): Promise<any> { }
 
   /**
    * Prepare the command to be executed
@@ -132,7 +129,7 @@ class TwitchChatCommand {
    * @param msg
    * @param parameters
    */
-  async prepareRun(msg: TwitchChatMessage, parameters: string[]): Promise<void> {
+  async prepareRun(msg: TwitchChatMessage, parameters: string[]): Promise<any> {
     const namedParameters: NamedParameters = {}
 
     if (this.options.args && this.options.args.length > 0) {
@@ -163,16 +160,16 @@ class TwitchChatCommand {
    */
   preValidate(msg: TwitchChatMessage): string | boolean {
     if (msg.messageType !== 'whisper' && this.options.privmsgOnly) {
-      return 'Эта команда доступна только через личное сообщение бота'
+      return 'This command is available only via private message'
     }
 
     if (this.options.botChannelOnly) {
       if (msg.channel.name !== this.client.getUsername()) {
-        return 'Эта команда может быть выполнена только на канале бота. Перейти https://twitch.tv/' + this.client.getUsername()
+        return 'This command can be executed only in the bot channel. Please head to https://twitch.tv/' + this.client.getUsername()
       }
     }
 
-    if (this.options.userlevel === 'everyone') {
+    if (this.options.userlevel === UserLevel.everyone) {
       return true
     }
 
@@ -186,36 +183,36 @@ class TwitchChatCommand {
       validationPassed = true
     }
 
-    if (this.options.userlevel === 'regular') {
+    if (this.options.userlevel === UserLevel.regular) {
       if (!validationPassed
         && this.client.options?.botOwners.length > 0
         && !this.client.options.botOwners.includes(msg.author.username)
       ) {
-        return 'Команда доступна только для проверенных пользователей'
+        return 'This command can be executed only from bot owners'
       }
     }
 
-    if (this.options.userlevel === 'subscriber') {
+    if (this.options.userlevel === UserLevel.subscriber) {
       if (!validationPassed && !msg.author.isSubscriber) {
-        return 'Команда доступна только для платных подписчиков'
+        return 'This command can be executed only from the subscribers'
       }
     }
 
-    if (this.options.userlevel === 'vip') {
+    if (this.options.userlevel === UserLevel.vip) {
       if (!validationPassed && !msg.author.isVip) {
-        return 'Команда доступна только для VIP'
+        return 'This command can be executed only from the vips'
       }
     }
 
-    if (this.options.userlevel === 'moderator') {
+    if (this.options.userlevel === UserLevel.moderator) {
       if (!validationPassed) {
-        return 'Команда доступна только для модераторов или стримера'
+        return 'This command can be executed only from the broadcaster'
       }
     }
 
-    if (this.options.userlevel === 'broadcaster') {
+    if (this.options.userlevel === UserLevel.broadcaster) {
       if (!msg.author.isBroadcaster) {
-        return 'Команда доступна только для стримера'
+        return 'This command can be executed only from a mod or the broadcaster'
       }
     }
 
@@ -223,4 +220,4 @@ class TwitchChatCommand {
   }
 }
 
-export { TwitchChatCommand, CommandOptions, CommandArgument, CommandProvider }
+export { TwitchChatCommand, CommandOptions, CommandArgument, CommandProvider, UserLevel, MessageType }
