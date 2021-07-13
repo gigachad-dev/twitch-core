@@ -52,6 +52,10 @@ export default class TextCommandsManager extends TwitchChatCommand {
           this.updateMessageType(msg, command, opts as MessageType)
           break
 
+        case 'rename':
+          this.updateCommandName(msg, command, opts)
+          break
+
         default:
           msg.reply(`Action '${action}' is not found!`)
       }
@@ -184,5 +188,13 @@ export default class TextCommandsManager extends TwitchChatCommand {
     })
 
     msg.reply(`Command '${name}' updated!`)
+  }
+
+  updateCommandName(msg: TwitchChatMessage, command: string, opts: string) {
+    if (opts.length > 0) {
+      this.updateCommandOptions(msg, command, { name: opts })
+    } else {
+      msg.reply('Message text required')
+    }
   }
 }
