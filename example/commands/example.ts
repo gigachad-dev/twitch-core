@@ -1,4 +1,9 @@
-import { TwitchChatCommand, TwitchCommandClient, TwitchChatMessage, CommandOptions } from '../../src'
+import {
+  CommandOptions,
+  TwitchChatCommand,
+  TwitchChatMessage,
+  TwitchCommandClient
+} from '../../src'
 
 interface CommandArgs {
   name: string
@@ -31,7 +36,7 @@ export default class Example extends TwitchChatCommand {
     })
   }
 
-  async run(msg: TwitchChatMessage, { name, age, bool }: CommandArgs): Promise<void> {
+  async run(msg: TwitchChatMessage, { name, age, bool }: CommandArgs) {
     msg.reply(`${name} ${age} ${bool}`)
   }
 

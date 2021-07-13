@@ -1,5 +1,10 @@
 import fetch from 'node-fetch'
-import { CommandOptions, TwitchChatCommand, TwitchChatMessage, TwitchCommandClient } from '../../src'
+import {
+  CommandOptions,
+  TwitchChatCommand,
+  TwitchChatMessage,
+  TwitchCommandClient
+} from '../../src'
 
 interface CatResponse {
   file: string
@@ -21,7 +26,7 @@ export default class Cat extends TwitchChatCommand {
     this.cat_api = 'http://aws.random.cat/meow'
   }
 
-  async run(msg: TwitchChatMessage): Promise<void> {
+  async run(msg: TwitchChatMessage) {
     try {
       const response = await fetch(this.cat_api)
       const json: CatResponse = await response.json()
@@ -33,7 +38,7 @@ export default class Cat extends TwitchChatCommand {
     }
   }
 
-  rand(min: number, max: number): number {
+  rand(min: number, max: number) {
     return Math.floor(min + Math.random() * (max + 1 - min))
   }
 }

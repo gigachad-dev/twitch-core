@@ -1,9 +1,9 @@
 {
+  "Commands": {},
   "Example": {
     "name": "example",
-    "group": "system",
     "userlevel": "everyone",
-    "description": "Пример команды",
+    "description": "Example command",
     "examples": [
       "!example",
       "!example <args>"
@@ -14,8 +14,8 @@
     "aliases": [
       "кот"
     ],
-    "group": "system",
     "userlevel": "everyone",
-    "description": "Фото кота"
-  }
+    "description": "Random cats!"
+  },
+  "TextCommandsManager": {}
 }

@@ -1,12 +1,11 @@
-[
-  {
-    "name": "text",
-    "text": "123",
-    "messageType": "actionReply"
-  },
-  {
-    "name": "hello",
-    "text": "world",
-    "userlevel": "vip"
-  }
-]
+{
+  "options": {},
+  "commands": [
+    {
+      "name": "yes",
+      "text": "no",
+      "userlevel": "everyone",
+      "messageType": "reply"
+    }
+  ]
+}
